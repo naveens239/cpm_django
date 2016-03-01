@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+
+ <style>
+ {% block style %}
+.jumbotron{
+ 	background-color: rgba(206, 200, 182, 0.47);
+ 	color:#261b06;
+ }
+
+ .btn-primary{
+ 	background-color: #261b06;
+ 	border-color:  #261b06;
+ }
+ .btn-primary:hover{
+ 	background-color: rgba(46, 110, 105, 0.9);
+ 	border-color:  #473108;
+ }
+ .btn-default{
+ 	background-color: #261b06;
+ 	border-color:  #261b06;
+ 	color: #fff;
+ }
+ .btn-default:hover{
+ 	background-color: rgba(46, 110, 105, 0.9);
+ 	border-color:  #473108;
+ 	color: #fff;
+ }
+.jumbotron p a{
+	color: rgba(22, 158, 148, 0.91) !important;
+}
+.jumbotron p a:hover{
+	color: rgba(46, 110, 105, 0.9) !important;
+}
+.row p{
+  font-size: 15px;
+}
+.jumbotron .container{
+	width:100%;
+}
+
+ {% endblock %}
+ </style>
+{% block jumbotron %}
+{%if not request.user.is_authenticated %}
+<div class="jumbotron">
+	<div class="container">
+		<div class='row'>
+			<div class='col-sm-3 col-sm-offset-4'>
+			<h2 class="text-align-center">Register</h2>
+				<form method="post" action=".">
+				  {% csrf_token %}
+				  {{ form|crispy }}
+
+				  <input class='btn btn-block btn-primary' type="submit" value="{% trans 'Sign Up' %}" />
+				</form>
+			</div>
+		</div>
+
+	<hr/>
+		<div class='row'>
+			<div class='col-sm-3 col-sm-offset-4 text-align-center'>
+			<p>Need to <a href="{% url 'auth_login' %}">Login</a>?</p>
+			</div>
+		</div>
+	</div>
+</div>
+{% endif %}
+{% endblock %}

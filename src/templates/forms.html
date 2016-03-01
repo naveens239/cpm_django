@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+
+
+ <style>
+ {% block style %}
+.jumbotron{
+ 	background-color: rgba(206, 200, 182, 0.47);
+ 	color:#261b06;
+ }
+
+ .btn-primary{
+ 	background-color: #261b06;
+ 	border-color:  #261b06;
+ }
+ .btn-primary:hover{
+ 	background-color: rgba(46, 110, 105, 0.9);
+ 	border-color:  #473108;
+ }
+ .btn-default{
+ 	background-color: #261b06;
+ 	border-color:  #261b06;
+ 	color: #fff;
+ }
+ .btn-default:hover{
+ 	background-color: rgba(46, 110, 105, 0.9);
+ 	border-color:  #473108;
+ 	color: #fff;
+ }
+.jumbotron p a{
+	color: rgba(22, 158, 148, 0.91) !important;
+}
+.jumbotron p a:hover{
+	color: rgba(46, 110, 105, 0.9) !important;
+}
+.row p{
+  font-size: 15px;
+}
+ {% endblock %}
+ </style>
+
+{% block jumbotron %}
+<div class="jumbotron">
+<div class="row">
+<div class='col-sm-3 col-sm-offset-4'>
+
+<form method='POST' action=''>{% csrf_token %}
+{% if title %}
+
+<h2 class='{%if title_align_center %}text-align-center {% endif %}'>{{ title }}</h2>
+
+{% endif %}
+{{form|crispy}}
+<input class='btn btn-block btn-primary' type='submit' value = "Submit">
+</form>
+</div>
+</div>
+</div>
+{% endblock %}

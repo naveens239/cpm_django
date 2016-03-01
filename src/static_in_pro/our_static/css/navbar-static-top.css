@@ -1,0 +1,32 @@
+body {
+  min-height: 2000px;
+}
+
+.navbar-static-top {
+  margin-bottom: 0px !important;
+  background-color: rgba(22, 158, 148, 0.91);
+  border-color: #b9944a;
+}
+
+.navbar-default .navbar-brand{
+	color:#333;
+}
+.navbar-default .navbar-brand:hover{
+	color:#fff;
+}
+.navbar-default .navbar-nav>li>a {
+	color:#333;
+}
+.navbar-default .navbar-nav>li>a:hover {
+	color:#fff;
+}
+.navbar-default .navbar-toggle{
+	border-color: transparent !important;
+
+}
+.navbar-toggle{
+   background-color:  rgba(22, 158, 148, 0.91) !important;
+}
+.navbar-toggle:hover{
+   background-color: #fff !important;
+}

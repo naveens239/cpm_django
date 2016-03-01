@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+<style>
+ {% block style %}
+.jumbotron{
+ 	background-color: rgba(206, 200, 182, 0.47);
+ 	color:#261b06;
+ }
+
+ .btn-primary{
+ 	background-color: #261b06;
+ 	border-color:  #261b06;
+ }
+ .btn-primary:hover{
+ 	background-color: rgba(46, 110, 105, 0.9);
+ 	border-color:  #473108;
+ }
+ .btn-default{
+ 	background-color: #261b06;
+ 	border-color:  #261b06;
+ 	color: #fff;
+ }
+ .btn-default:hover{
+ 	background-color: rgba(46, 110, 105, 0.9);
+ 	border-color:  #473108;
+ 	color: #fff;
+ }
+.jumbotron p a{
+	color: rgba(22, 158, 148, 0.91) !important;
+	font-size: 15px;
+}
+.jumbotron p{
+	font-size: 15px;
+}
+.jumbotron p a:hover{
+	color: rgba(46, 110, 105, 0.9) !important;
+	font-size: 15px;
+}
+.container{
+  font-size: 17px;
+}
+ {% endblock %}
+ </style>
+{% block jumbotron %}
+<div class="jumbotron">
+<div class="container">
+<div class="row">
+<div class='col-sm-6 col-sm-offset-3'>
+<h2 class="text-align-center">Dashboard</h2>
+	<div class='row'>
+	<div class='col-sm-4'>
+		<div class="panel panel-default">
+	    <div class="panel-heading">Panel Heading</div>
+	    <div class="panel-body">Panel Content</div>
+	    <div class="panel-footer">Panel Footer</div>
+  </div>
+	</div>
+	<div class='col-sm-4'>
+		<div class="panel panel-default">
+	    <div class="panel-heading">Panel Heading</div>
+	    <div class="panel-body">Panel Content</div>
+	    <div class="panel-footer">Panel Footer</div>
+  </div>
+	</div>
+	<div class='col-sm-4'>
+		<div class="panel panel-default">
+	    <div class="panel-heading">Panel Heading</div>
+	    <div class="panel-body">Panel Content</div>
+	    <div class="panel-footer">Panel Footer</div>
+  </div>
+	</div>
+	</div>
+<p class='lead'></p>
+</div>
+
+<i class="fa fa-plus-circle"></i>
+<input class='btn btn-primary' value="Create new Project"/>
+</div>
+</div>
+</div>
+{% endblock %}

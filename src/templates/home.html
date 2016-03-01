@@ -1,0 +1,93 @@
+ {% extends "base.html"%}
+ {% load crispy_forms_tags %}
+ {% load staticfiles %}
+
+ {% block head_title%} Welcome | {{block.super}}{% endblock%}
+
+ <style>
+ {% block style %}
+.jumbotron{
+ 	background-color: rgba(206, 200, 182, 0.47);
+ 	color:#261b06;
+ }
+
+ .btn-primary{
+ 	background-color: #261b06;
+ 	border-color:  #261b06;
+ }
+ .btn-primary:hover{
+ 	background-color: rgba(46, 110, 105, 0.9);
+ 	border-color:  #473108;
+ }
+ .btn-default{
+ 	background-color: #261b06;
+ 	border-color:  #261b06;
+ 	color: #fff;
+ }
+ .btn-default:hover{
+ 	background-color: rgba(46, 110, 105, 0.9);
+ 	border-color:  #473108;
+ 	color: #fff;
+ }
+.a{
+	background-color: rgba(22, 158, 148, 0.91);
+}
+.a:hover{
+	background-color: rgba(46, 110, 105, 0.9);
+}
+.container{
+  font-size: 17px;
+}
+ {% endblock %}
+ </style>
+
+ {% block jumbotron %}
+ {% if not request.user.is_authenticated %}
+<div class="jumbotron">
+ 
+<div class="container">
+	<div class ="row">
+		<div class='col-sm-6'>
+		        <h1>Capstone Project Management</h1>
+		        <p>Login / Signup to view your projects and get started.</p>
+		        <p>To see the difference between static and fixed top navbars, just scroll.</p>
+		      
+		        </div>
+		         <div class='col-sm-6'> 
+		        <!--  <div class='col-sm-6' style="background-color: black; height: 315px;">  -->
+		           <!-- <img src="http://blogs.henrico.k12.va.us/21/files/2014/04/Untitled-11.jpg" class='img-responsive'/> -->
+		        	<iframe width="525" height="315" src="https://www.youtube.com/embed/_jHpnb-QmTA" frameborder="0" allowfullscreen  class="embed-responsive-item" ></iframe>
+		         </div> 
+	</div>
+	</div>
+	{% endif %}
+</div>
+{% endblock %}
+
+{% block content %}
+<div class = "row">
+ {% if request.user.is_authenticated %}
+ <h1>Welcome {{request.user}}</h1>
+ {% else %}
+<!-- <div class="col-xs-3 pull-right">
+			<p class='lead text-align-center'> {{title}}</p>
+
+			<form method='POST' action=''>{% csrf_token %}
+			{{form|crispy}}
+			<input class= 'btn btn-primary' type='submit' value = "Sign up">
+			</form>
+</div> -->
+			
+<div class='col-sm-3'>
+ <img src='{% static "img/capstone1.jpg" %}' class='img-responsive'/> 
+</div>
+<div class='col-sm-3'>
+<p class='lead text-align-center'>Created for all</p>
+<i class="fa fa-bolt fa-5x"></i>
+</div>
+<div class='col-sm-3'>
+<img src='{% static "img/capstone3.jpg" %}' class='img-responsive'/> 
+</div>
+</div>
+{% endif %}
+{% endblock %}
