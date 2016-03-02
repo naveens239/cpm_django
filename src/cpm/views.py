@@ -1,7 +1,10 @@
-from django.shortcuts import render
-from .forms import ContactForm, SignUpForm
+from django.shortcuts import render, render_to_response,redirect
+from django.http import HttpResponseRedirect
+from django.core.urlresolvers import reverse
+from .forms import ContactForm, SignUpForm,AddNewProjectForm
 from django.core.mail import send_mail
 from django.conf import settings
+from .models import CreateNewProject
 
 # Create your views here.
 def home(request):
@@ -54,6 +57,45 @@ def contact(request):
          from_email,
          to_email,
          fail_silently= False)
+    context = {
+        "form" : form,
+        "title": title,
+        "title_align_center":title_align_center,
+    }
+    return render(request, "forms.html", context)
+
+# Create your views here.
+def about(request):
+
+
+    return render(request, "about.html",{})
+
+def profile(request):
+    project_data = CreateNewProject.objects.all()
+    context={
+            "form":project_data
+        }
+
+    return render(request, "profile.html",context)    
+def addproject(request):
+    #print request.POST
+    title = 'Add New Project'
+    title_align_center  = True
+    form = AddNewProjectForm(request.POST or None)
+    if form.is_valid():
+        # for key in form.cleaned_data:
+        #     print key
+        #     print form.cleaned_data.get(key)
+        form_prj_name = form.cleaned_data.get("project_name")
+        form_prj_status = form.cleaned_data.get("project_status")
+        form_prj_completion = form.cleaned_data.get("project_completion")
+        form.save()
+        project_data = CreateNewProject.objects.all()
+        context={
+            "form":project_data
+        }
+        return redirect('/profile/',context) 
+        print'form data', form
     context = {
         "form" : form,
         "title": title,

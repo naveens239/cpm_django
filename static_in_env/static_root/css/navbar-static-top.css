@@ -3,7 +3,7 @@ body {
 }
 
 .navbar-static-top {
-  margin-bottom: 19px;
+  margin-bottom: 0px !important;
   background-color: rgba(22, 158, 148, 0.91);
   border-color: #b9944a;
 }

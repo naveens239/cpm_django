@@ -1,5 +1,5 @@
 from django import forms
-from .models import SignUp
+from .models import SignUp,CreateNewProject
 
 class ContactForm(forms.Form):
     first_name = forms.CharField(required = False)
@@ -35,3 +35,17 @@ class SignUpForm(forms.ModelForm):
         if (["0-9"] in first_name) or(["0-9"] in last_name):
            raise forms.ValidationError("Please enter a valid name")
         return first_name, last_name
+
+class AddNewProjectForm(forms.ModelForm):
+    class Meta:
+      model = CreateNewProject
+      fields = ['project_name', 'project_status', 'project_completion'] 
+    project_name = forms.CharField(required = True)
+    CHOICES_status = (('Ongoing', 'Ongoing',), ('Completed', 'Completed',))
+    project_status = forms.ChoiceField(widget=forms.RadioSelect, required = True, choices=CHOICES_status)
+    project_completion = forms.IntegerField(required = True)
+    def clean_project_completion(self):
+      completion = self.cleaned_data.get('project_completion')
+      if completion<0 or completion >100:
+           raise forms.ValidationError("Please enter a numeric value between 0 and 100")
+      return completion

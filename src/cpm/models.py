@@ -14,7 +14,9 @@ class SignUp(models.Model):
 	   return str(self.first_name+" "+self.last_name)
 
 class CreateNewProject(models.Model):
-	project_name = models.CharField(max_length=30, blank=False, null=False)
-	project_completion = models.IntegerField()
-	start_date = models.DateField(blank=False, null=False)
-	end_date = models.DateField(blank=False, null=False)
+	project_name = models.CharField(max_length=30, blank=False, null=False, unique=True)
+	project_status = models.CharField(max_length=10,blank=False, null=False)
+	project_completion = models.IntegerField(blank=False, null=False)
+
+	def __unicode__(self):
+		return str(self.project_name)

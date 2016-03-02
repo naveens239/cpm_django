@@ -20,8 +20,9 @@ from django.conf.urls.static import static
 urlpatterns = [
     url(r'^$', 'cpm.views.home', name='home'),
     url(r'^contact/$', 'cpm.views.contact', name='contact'),
-    url(r'^about/$', 'mysite.views.about', name='about'),
-    url(r'^profile/$', 'mysite.views.profile', name='profile'),
+    url(r'^about/$', 'cpm.views.about', name='about'),
+    url(r'^profile/$', 'cpm.views.profile', name='profile'),
+    url(r'^addproject/$', 'cpm.views.addproject', name='addproject'),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^accounts/', include('registration.backends.default.urls')),
 ]+static(settings.STATIC_URL, document_root = settings.STATIC_ROOT)
