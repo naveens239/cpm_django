@@ -1,5 +1,7 @@
 from django import forms
-from .models import SignUp,CreateNewProject
+from django.db import models
+from .models import SignUp,Project,Stage,StageSetting,Team,Role,Plan
+
 
 class ContactForm(forms.Form):
     first_name = forms.CharField(required = False)
@@ -38,14 +40,49 @@ class SignUpForm(forms.ModelForm):
 
 class AddNewProjectForm(forms.ModelForm):
     class Meta:
-      model = CreateNewProject
-      fields = ['project_name', 'project_status', 'project_completion'] 
-    project_name = forms.CharField(required = True)
-    CHOICES_status = (('Ongoing', 'Ongoing',), ('Completed', 'Completed',))
-    project_status = forms.ChoiceField(widget=forms.RadioSelect, required = True, choices=CHOICES_status)
-    project_completion = forms.IntegerField(required = True)
-    def clean_project_completion(self):
-      completion = self.cleaned_data.get('project_completion')
-      if completion<0 or completion >100:
-           raise forms.ValidationError("Please enter a numeric value between 0 and 100")
-      return completion
+      model = Project
+      #fields = ['name', 'status', 'completion'] 
+      fields =['name','start_date','end_date']
+    name = forms.CharField(required = True)
+    start_date = forms.DateField(widget=forms.DateInput(attrs={'class': 'datepicker'}))
+    end_date =forms.DateField(widget=forms.DateInput(attrs={'class': 'datepicker'}))
+    # def clean_date(self):
+    #     start_date = cleaned_data.get("start_date")
+    #     end_date = cleaned_data.get("end_date")
+    #     if end_date < start_date:
+    #         msg = "Project estimated end date should be greater than start date."
+    #         self._errors["end_date"] = self.error_class([msg])
+    #     return start_date
+    #start_date =forms.DateField(widget=forms.TextInput(attrs={'class':'datepicker'}))
+    
+    # CHOICES_status = (('Ongoing', 'Ongoing',), ('Completed', 'Completed',))
+    # status = forms.ChoiceField(widget=forms.RadioSelect, required = True, choices=CHOICES_status)
+    # completion = forms.IntegerField(required = True) 
+    
+class TeamAddForm(forms.ModelForm):
+  class Meta:
+    model = Team
+    fields=['member_name','role_name']
+  role_name = forms.ChoiceField(required = True,choices = ((role.id, role.name) for role in Role.objects.all()))
+  member_name = forms.CharField(required = True)
+
+class TeamEditForm(forms.ModelForm):
+  class Meta:
+    model = Team
+    fields=['member_name','role_name','model_instance']
+  role_name = forms.ChoiceField(required = True,choices = ((role.id, role.name) for role in Role.objects.all()))
+  member_name = forms.CharField(required = True)
+  model_instance = forms.CharField(widget=forms.HiddenInput())
+
+class ProjectStageForm(forms.ModelForm):
+  class Meta:
+      model = Stage
+      fields = ['stage_item']
+  #stage_item = forms.ModelMultipleChoiceField(required=False,queryset=Stage.objects.values_list('stage_item', flat=True), widget=forms.CheckboxSelectMultiple)
+  #stage_item = forms.ModelMultipleChoiceField(required=False,queryset=Stage.objects.all(), widget=forms.CheckboxSelectMultiple)
+  stage_item = forms.MultipleChoiceField(required = False,choices = ((sub.id, sub.stage_item) for sub in Stage.objects.all()), widget=forms.CheckboxSelectMultiple())
+
+class ProjectPlanForm(forms.ModelForm):
+  class Meta:
+      model = Plan 
+      fields = ["project_plan","business_plan","wiki_link"]

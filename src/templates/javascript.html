@@ -6,3 +6,42 @@
     <script src="{% static 'js/bootstrap.min.js' %}"></script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <script src="{% static 'js/ie10-viewport-bug-workaround.js' %}"></script>
+  <!--   <script src="{% static 'js/jquery-1.10.2.js' %}"></script> -->
+    <script src="{% static 'js/jquery-ui.js' %}"></script>
+
+    <script>
+      $(function() {
+        $( ".datepicker" ).datepicker();
+      });
+    
+      $(document).ready(function(){
+        $("#mytable #checkall").click(function () {
+                if ($("#mytable #checkall").is(':checked')) {
+                    $("#mytable input[type=checkbox]").each(function () {
+                        $(this).prop("checked", true);
+                    });
+
+                } else {
+                    $("#mytable input[type=checkbox]").each(function () {
+                        $(this).prop("checked", false);
+                    });
+                }
+            });
+            
+            $("[data-toggle=tooltip]").tooltip();
+        });
+   
+      console.log("Check");
+      $('button.update').on('click',function(){
+      $("#editModal").modal("show");
+          $("#edit-modal-header-ele-id").val($(this).closest('tr').find('.row-ele-id').text());
+          $("#edit-modal-ele-name").val($(this).closest('tr').find('.row-ele-name').text());
+          $("#edit-modal-ele-role").text($(this).closest('tr').find('.row-ele-role').text());
+
+         });
+      $('button.delete').on('click',function(){
+      $("#deleteModal").modal("show");
+          $("#delete-modal-header-ele-id").val($(this).closest('tr').find('.row-ele-id').text());
+         });
+
+</script>

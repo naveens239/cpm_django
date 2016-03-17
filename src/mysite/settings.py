@@ -46,9 +46,11 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_bootstrap_breadcrumbs',
     # third party apps
     'crispy_forms',
     'registration',
+
     # my apps
     'cpm',
 ]
@@ -149,3 +151,4 @@ SITE_ID = 1
 LOGIN_REDIRECT_URL='/profile/'
 #Crispy form tags settings
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
+

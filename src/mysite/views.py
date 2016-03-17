@@ -7,11 +7,3 @@ def about(request):
 
 
     return render(request, "about.html",{})
-
-def profile(request):
-    project_data = CreateNewProject.objects.all()
-    context={
-            "form":project_data
-        }
-
-    return render(request, "profile.html",context)    

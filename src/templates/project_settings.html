@@ -1,0 +1,239 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load crispy_forms_tags %}
+
+<style>
+ {% block style %}
+.jumbotron{
+ 	background-color: rgba(206, 200, 182, 0.47);
+ 	color:#261b06;
+ }
+
+ .btn-primary{
+ 	background-color: #261b06;
+ 	border-color:  #261b06;
+ }
+ .btn-primary:hover{
+ 	background-color: rgba(46, 110, 105, 0.9);
+ 	border-color:  #473108;
+ }
+ .btn-default,.nav-tabs li a {
+ 	background-color: #261b06;
+ 	border-color:  #261b06;
+ 	color: #fff;
+ }
+
+ .btn-default:hover,.nav-tabs li a:hover{
+ 	background-color: rgba(46, 110, 105, 0.9);
+ 	border-color:  #473108;
+ 	color: #fff;
+ }
+.jumbotron p a{
+	color: rgba(22, 158, 148, 0.91) !important;
+	font-size: 15px;
+}
+.jumbotron p{
+	font-size: 15px;
+}
+.jumbotron p a:hover{
+	color: rgba(46, 110, 105, 0.9) !important;
+	font-size: 15px;
+}
+.container{
+  font-size: 20px;
+}
+.breadcrumb{
+	background-color: transparent;
+}
+
+form {
+    width: 300px;
+    margin: 0 auto;
+}
+ {% endblock %}
+ </style>
+
+{% block jumbotron %}
+
+
+
+<div class="jumbotron">
+<div class="container">
+<a type = "button "class="btn btn-default pull-right" href="{% url 'projectoverview' name=project_data.name%}">Back To Overview</a><br><br>
+
+<div class="row">
+
+<div class='col-sm-12'>
+<h2 class="text-align-center">Settings for {{project_data.name}}</h2>
+<br>
+	    
+
+  <ul class="nav nav-tabs">
+    <li class="active" ><a data-toggle="tab" href="#stages">Project Stages</a></li>
+    <li><a data-toggle="tab" href="#team">Team</a></li>
+  </ul>
+
+
+<div class="tab-content">
+    <div id="stages" class="tab-pane fade in active">
+	  	  <div class="tab-content" style="display: inline ; text-align: left">
+
+	  	  	
+	    		<div id="stage_1" class="tab-pane fade in active  col-sm-3">
+	    		  <!-- <h4>Stage 1</h4>	 -->
+	    		  		
+	    		  		<form class="form" method='POST' action="">{% csrf_token %}
+							{{stage_form|crispy}}
+							<!-- {% crispy stage_form %} -->
+							<input class='btn btn-block btn-primary' name = "stage" type='submit' value = "Submit">
+						</form>   
+ 				   
+	    		</div>
+		  </div>
+		  <!--  <button type="submit" class="btn btn-default pull-right" href="">Save Changes</a>
+		   </form>	 -->
+    </div>
+    <div id="team" class="tab-pane fade">
+	  <div class="tab-content">
+	      <div id="view" class="tab-pane fade in active">
+	      <button class="btn btn-default pull-right" data-title="Add" data-toggle="modal" data-target="#add">Add Member</button>
+	    	  <h4 class="text-align-center">View Members</h4>
+
+			    <div class="table-responsive">
+  				<table id="mytable" class="table table-condensed table-striped table-bordered table-hover no-margin">
+					<thead><tr>
+					
+					<th data-field="cust_id" data-visible="false" style="display:none;">
+                        
+                    </th>
+					<th style="width:35%">Team Member</th>
+					<th style="width:35%" class="hidden-phone">Designated Role</th>
+					<th style="width:15%" class="hidden-phone">Edit</th>
+					<th style="width:15%" class="hidden-phone">Delete</th>
+					</tr>
+					</thead>
+   			 <tbody>
+    			{% for item in team_data %}
+			      <tr>
+			         <td class="row-ele-id" style="display:none;">{{ item.id }}</td>
+			        <td class="row-ele-name">{{ item.member_name }}</td>
+			        <td class="row-ele-role"  class="hidden-phone">{{ item.member_role }}</td>
+			          <td>
+			          <button class=" btn btn-primary btn-xs update"data-title="Edit" data-toggle="modal"  ><i class="fa fa-pencil fa-lg"></i></button></td>
+			    		<td>
+			    		<button  class="btn btn-danger btn-xs delete" data-title="Delete" data-toggle="modal"><i class="fa fa-trash fa-lg"></i>
+						</button></td>
+			      </tr>
+			      {% endfor %}
+			      </tbody>
+			      </table>
+
+			<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="edit" aria-hidden="true">
+			   <div class="modal-dialog">
+				 <div class="modal-content">
+					 <div class="modal-header">
+					        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+					        <i class="fa fa-times-circle fa-lg"></i></button>
+					        <h4 class="modal-title custom_align" id="Heading">Edit Detail <!-- - <span id="edit-model-header-ele-id">1</span> --></h4>
+					  </div>
+			          <div class="modal-body">
+			           <form  class="form"  method='POST' action="" enctype="application/x-www-form-urlencoded">{% csrf_token %}
+
+					       <div class="form-group">
+					          <h5>Member Name</h5>
+					        <input id="edit-modal-ele-name" class="form-control required" name="member_name" type="text" >	
+				         </div>
+				         <div class="form-group">
+					        <h5 id = "role">Designated Role: <span id="edit-modal-ele-role">1</span><br><br>
+					       <!--  <input id="edit-modal-ele-role"class="form-control required" name="member_role" type="text"/> -->
+					         {{team_edit_form.role_name}}</h5>
+					        </div>  
+					      <div class="form-group">
+					     
+					       <input type='hidden' class="form-control required"  name = 'model_instance' id="edit-modal-header-ele-id" />
+					        </div> 
+					       <input type="submit" name = "edit" class="btn btn-warning btn-lg" style="width: 100%;" value="Update">
+  
+				        </form>
+			            
+			          </div>
+			        
+			          <div class="modal-footer ">
+			             <!-- <button type="button" name=edit class="btn btn-warning btn-lg" style="width: 100%;">Update</button> -->
+			         </div>
+			      </div>
+			    <!-- /.modal-content --> 
+			    </div>
+			      <!-- /.modal-dialog --> 
+			</div>
+			<div class="modal fade" id="add" tabindex="-1" role="dialog" aria-labelledby="edit" aria-hidden="true">
+			   <div class="modal-dialog">
+				 <div class="modal-content">
+					 <div class="modal-header">
+					        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+					        <i class="fa fa-times-circle fa-lg"></i></button>
+					        <h4 class="modal-title custom_align" id="Heading">Add Member</h4>
+					  </div>
+			          <div class="modal-body">
+			             <form  class="form"  method='POST' action="">
+			             	{% csrf_token %}
+							{{team_add_form|crispy}}
+							<!-- <input class='btn btn-block btn-primary' type='submit' value = "Save"> -->
+							<input type="submit" name = "save" class="btn btn-warning btn-lg" style="width: 100%;" value="Save">
+						</form>   
+				 
+			          </div>
+			          <div class="modal-footer ">
+			            <!--  <input type="submit" class="btn btn-warning btn-lg" style="width: 100%;">Save</input> -->
+			         </div>
+			      </div>
+			    <!-- /.modal-content --> 
+			    </div>
+			      <!-- /.modal-dialog --> 
+			</div>
+			<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="edit" aria-hidden="true">
+			    <div class="modal-dialog">
+			       <div class="modal-content">
+			          <div class="modal-header">
+				        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"> <i class="fa fa-times-circle fa-lg"></i></button>
+				        <h4 class="modal-title custom_align" id="Heading">Delete this entry</h4>
+			          </div>
+			          <div class="modal-body">
+			           <form  class="form"  method='POST' action="" enctype="application/x-www-form-urlencoded">{% csrf_token %}
+			              <div class="alert alert-danger"><i class="fa fa-exclamation-triangle fa-lg"></i>Are you sure you want to delete this Record?</div>
+			               <div class="form-group">
+					     
+					       <input type='hidden' class="form-control required"  name = 'model_instance' id="delete-modal-header-ele-id" />
+					        </div> 
+					       <!-- <input type="submit" name = "edit" class="btn btn-warning btn-lg" style="width: 100%;" value="Update"> -->
+  						    <input type="submit" name = "delete" class="btn btn-success" value="Yes">
+				            <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+				        </form>
+			          </div>
+			          <div class="modal-footer ">
+				   <!--      <button type="submit" class="btn btn-success" > Yes</button>
+				        <button type="button" class="btn btn-default" data-dismiss="modal">No</button> -->
+			      	  </div>
+			        </div>
+			    <!-- /.modal-content --> 
+			    </div>
+			      <!-- /.modal-dialog --> 
+			</div>
+		
+</div>
+</div>
+    	  </div>
+    </div>        
+  </div>
+
+
+	
+
+
+
+</div>
+</div>
+</div>
+</div>
+
+{% endblock %}

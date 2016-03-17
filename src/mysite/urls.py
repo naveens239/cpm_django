@@ -17,14 +17,19 @@ from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
 from django.conf.urls.static import static
+
+
 urlpatterns = [
     url(r'^$', 'cpm.views.home', name='home'),
     url(r'^contact/$', 'cpm.views.contact', name='contact'),
     url(r'^about/$', 'cpm.views.about', name='about'),
     url(r'^profile/$', 'cpm.views.profile', name='profile'),
     url(r'^addproject/$', 'cpm.views.addproject', name='addproject'),
+    url(r'^projectoverview/(?P<name>.*)/$', 'cpm.views.projectoverview', name='projectoverview'),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^accounts/', include('registration.backends.default.urls')),
+    url(r'^projectsettings/(?P<name>.*)/$', 'cpm.views.projectsettings', name='projectsettings'),
+    url(r'^projectdetails/(?P<name>.*)/$', 'cpm.views.projectdetails', name='projectdetails'),
 ]+static(settings.STATIC_URL, document_root = settings.STATIC_ROOT)
 
 if settings.DEBUG:
