@@ -66,7 +66,8 @@
 		    <div class="panel-heading">Project Status</div>
 		    <div class="panel-body" style='font-size:15px;'>
 		    Status: {{project_data.status}}<br><br>
-		    Start Date: {{project_data.start_date}}<br><br>
+		    Start Date: {{project_data.start_date|date:"M d, Y" }}<br><br>
+		    End Date: {{project_data.end_date|date:"M d, Y" }}<br><br>
 		    </div>
 		    <div class="panel-footer">
 			 	<div class="progress">
@@ -83,37 +84,42 @@
 		<div class="panel panel-default">
 		    <div class="panel-heading">Team Members</div>
 		    <div class="panel-body" style='font-size:15px;'>
-		    Status: {{project_data.status}}<br><br>
-		    Start Date: {{project_data.start_date}}<br><br>
-		   
+		    {% if not team_data.empty %}
+
+			    {% for member in team_data %}
+			    	<h5>* {{member.member_name}}</h5>
+			    {% endfor %}
+			{% endif %}
+		    {% if not team_data %}
+		    	<h5>No team formed yet</h5>
+		    {% endif %}
 		    </div>
-		    <div class="panel-footer">
-			 	<div class="progress">
-					  <div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar"
-					  aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width:{{project_data.completion}}%">
-					    {{project_data.completion}}%
-					  </div>
-				</div>
-			</div>
   		</div>
 	</div>
 
 	<div class='col-md-4'>
 		<div class="panel panel-default">
 		    <div class="panel-heading">Team Roles</div>
-		    <div class="panel-body" style='font-size:15px;'>
-		    Status: {{project_data.status}}<br><br>
-		    Start Date: {{project_data.start_date}}<br><br>
 		    
-		    </div>
-		    <div class="panel-footer">
+		    <div class="panel-body" style='font-size:15px;'>
+		     {% if team_data %}
+			    {% for member in team_data %}
+			    	<h5>* <b>{{member.member_role}}</b> - {{member.member_name}}</h5>
+			    {% endfor %}
+			 {% endif %}
+		     {% if not team_data %}
+		    	<h5>No roles assigned yet</h5>
+		     {% endif %}
+		     </div>
+		   
+		 <!--    <div class="panel-footer">
 			 	<div class="progress">
 					  <div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar"
 					  aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width:{{project_data.completion}}%">
 					    {{project_data.completion}}%
 					  </div>
 				</div>
-			</div>
+			</div> -->
   		</div>
 	</div>
 

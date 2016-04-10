@@ -1,0 +1,76 @@
+	<div class="modal fade" id="editOrderModal" tabindex="-1" role="dialog" aria-labelledby="edit" aria-hidden="true">
+	   <div class="modal-dialog">
+		 <div class="modal-content">
+			 <div class="modal-header">
+			        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+			        <i class="fa fa-times-circle fa-lg"></i></button>
+			        <h4 class="modal-title custom_align" id="Heading">Edit Order Detail <!-- - <span id="edit-model-header-ele-id">1</span> --></h4>
+			  </div>
+	          <div class="modal-body">
+	           <form  class="form"  method='POST' action="" enctype="application/x-www-form-urlencoded">{% csrf_token %}
+
+			     <div class="form-group">
+			          <h5>Category</h5>
+			         <input id="edit-modal-ele-category" class="form-control" name="order_category" type="text" >	
+		         </div>
+		         <div class="form-group">
+			          <h5>Sub Category</h5>
+			         <input id="edit-modal-ele-subcategory" class="form-control" name="order_sub_category" type="text" >	
+		         </div>
+		         <div class="form-group">
+			          <h5>Item</h5>
+			         <input id="edit-modal-ele-item" class="form-control" name="order_item" type="text" >	
+		         </div>
+		         <div class="form-group">
+			          <h5>Quantity</h5>
+			         <input id="edit-modal-ele-quantity" class="form-control" name="order_quantity" type="number" >	
+		         </div>
+		         <div class="form-group">
+			          <h5>Unit Price</h5>
+			         <input id="edit-modal-ele-price" class="form-control" name="order_unit_price" type="number" step="0.01" >	
+		         </div>
+		         <div class="form-group">
+			          <h5>URL to Item</h5>
+			         <input id="edit-modal-ele-url" class="form-control" name="order_item_url" type="text" >	
+		         </div>
+		         			      
+			      <div class="form-group">
+			     
+			       <input type='hidden' class="form-control required"  name = 'model_instance' id="edit-modal-header-ele-order-id" />
+			       <input type='hidden' class="form-control required"  name = 'order_status' id="edit-modal-ele-status" />
+			        </div> 
+			       <input id="edit-order-modal-submit" type="submit" name = "order_edit" class="btn btn-warning btn-lg" style="width: 100%;" value="Update">
+
+		        </form>
+	            
+	          </div>
+	        
+	          <div class="modal-footer ">
+	             <!-- <button type="button" name=edit class="btn btn-warning btn-lg" style="width: 100%;">Update</button> -->
+	         </div>
+	      </div>
+	    <!-- /.modal-content --> 
+	    </div>
+	      <!-- /.modal-dialog --> 
+	</div>
+
+	<div class="modal fade" id="editErrorOrderModal" tabindex="-1" role="dialog" aria-labelledby="edit" aria-hidden="true">
+	   <div class="modal-dialog">
+		 <div class="modal-content">
+			 <div class="modal-header">
+			        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+			        <i class="fa fa-times-circle fa-lg"></i></button>
+			        <h4 class="modal-title custom_align text-align-center" id="Heading">Edit Order Detail <!-- - <span id="edit-model-header-ele-id">1</span> --></h4>
+			  </div>
+	          <div class="modal-body">
+	          	<h5 class="text-align-center">Sorry, you cannot update an order that is approved.<br> Please place a new order.</h5>
+	          </div>
+	        
+	          <div class="modal-footer ">
+	             <!-- <button type="button" name=edit class="btn btn-warning btn-lg" style="width: 100%;">Update</button> -->
+	         </div>
+	      </div>
+	    <!-- /.modal-content --> 
+	    </div>
+	      <!-- /.modal-dialog --> 
+	</div>

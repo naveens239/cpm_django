@@ -1,0 +1,28 @@
+{% load crispy_forms_tags%}
+<div class="modal fade" id="add_photos" tabindex="-1" role="dialog" aria-labelledby="edit" aria-hidden="true">
+   <div class="modal-dialog">
+	 <div class="modal-content">
+		 <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+		        <i class="fa fa-times-circle fa-lg"></i></button>
+		        <h4 class="modal-title custom_align" id="Heading">Upload Prototype</h4>
+		  </div>
+          <div class="modal-body">
+            <!-- <form class="form" method='POST' action="">{% csrf_token %}
+				{{schedule_form|crispy}}
+				<input class='btn btn-block btn-primary' name = "schedule_save" type='submit' value = "Submit">
+			</form> -->
+            <form class="form" method='POST' action="" enctype="multipart/form-data">{% csrf_token %}
+				{{prototype_form|crispy}}
+				<input type="submit" name = "prototype_save" class="btn btn-warning btn-lg" style="width: 100%;" value="Save">
+			</form> 
+	 
+          </div>
+          <div class="modal-footer ">
+            <!--  <input type="submit" class="btn btn-warning btn-lg" style="width: 100%;">Save</input> -->
+         </div>
+      </div>
+    <!-- /.modal-content --> 
+    </div>
+      <!-- /.modal-dialog --> 
+</div>

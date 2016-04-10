@@ -1,0 +1,38 @@
+{% load crispy_forms_tags %}
+
+<div id="building" class="tab-pane fade">
+	<div class="tab-content" style="display: inline ; text-align: left">
+	<button class="btn btn-default pull-right" data-title="Add" data-toggle="modal" data-target="#add_photos">Upload photos</button>
+	<br>
+	<br>
+	<div class="row">
+	<div id = "pop_image">
+	{% for item in prototype_data %}
+	     
+	       <div id="{{item.id}}"class="col-sm-6 col-md-3" ng-repeat="Spaces in SpaceList {{item.id}}" data-toggle="modal">
+                 <a class="thumbnail" href="{{item.photo.url}}">
+              <img class="img-responsive" h src="{{item.photo.url}}" alt = "Generic placeholder thumbnail"></a>
+                
+               
+              <!--  <a role="button" class="delete_image" data-id = "{{item.id}}" href="#deleteImageModal"data-toggle="modal"style="position:absolute; bottom:50px; right:30px;"><i class="fa fa-trash fa" ></i></a>  -->   
+               <button  class="btn btn-danger btn-xs delete_image" data-id = "{{item.id}}"  data-title="Delete" data-toggle="modal" style="color: black;background-color:white;border-color:transparent;position:absolute; bottom:50px; right:30px;"><i class="fa fa-trash fa-lg"></i></button> 
+                <h5>{{item.pname}} - {{item.description}}</h5>         				
+            		 
+                
+            </div>	
+            
+	{% endfor %} 
+	</div>	 
+	</div>
+
+
+
+{% include "project/details/prototype_modal/upload.html" %}
+{% include "project/details/prototype_modal/image_delete.html" %}
+
+	</div>
+	
+		  <!--  <button type="submit" class="btn btn-default pull-right" href="">Save Changes</a>
+		   </form>	 -->
+    </div>
+   

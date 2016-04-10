@@ -1,0 +1,48 @@
+	<div class="modal fade" id="editTaskModal" tabindex="-1" role="dialog" aria-labelledby="edit" aria-hidden="true">
+	   <div class="modal-dialog">
+		 <div class="modal-content">
+			 <div class="modal-header">
+			        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+			        <i class="fa fa-times-circle fa-lg"></i></button>
+			        <h4 class="modal-title custom_align" id="Heading">Edit Task Detail <!-- - <span id="edit-model-header-ele-id">1</span> --></h4>
+			  </div>
+	          <div class="modal-body">
+	           <form  class="form"  method='POST' action="" enctype="application/x-www-form-urlencoded">{% csrf_token %}
+
+			     <div class="form-group">
+			          <h5>Task Name</h5>
+			         <input id="edit-modal-ele-task" class="form-control" name="task_name" type="text" >	
+		         </div>
+		         <div class="form-group">
+			         <h5>Assigned To<br></h5>
+			         <!-- <input id="edit-modal-ele-assigned" class="form-control required" name="assigned_to" type="text" >	 -->
+			         {{schedule_form.assigned_to}}
+			    </div> 
+			     <div class="form-group">
+			        <h5>Start Date</h5>
+			          <input id="edit-modal_start-datepick"  class="form-control"  name="start_date" type="text"/>	
+			        </div>  
+			      <div class="form-group">
+			        <h5>End Date</h5>
+			         <input id="edit-modal_end-datepick"  class="form-control"  name="end_date" type="text"/>	
+			        </div>   
+			      
+		        
+			      <div class="form-group">
+			     
+			       <input type='hidden' class="form-control required"  name = 'model_instance' id="edit-modal-header-ele-id" />
+			        </div> 
+			       <input id="edit-modal-submit" type="submit" name = "schedule_edit" class="btn btn-warning btn-lg" style="width: 100%;" value="Update">
+
+		        </form>
+	            
+	          </div>
+	        
+	          <div class="modal-footer ">
+	             <!-- <button type="button" name=edit class="btn btn-warning btn-lg" style="width: 100%;">Update</button> -->
+	         </div>
+	      </div>
+	    <!-- /.modal-content --> 
+	    </div>
+	      <!-- /.modal-dialog --> 
+	</div>

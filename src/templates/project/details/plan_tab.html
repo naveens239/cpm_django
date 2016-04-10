@@ -1,0 +1,42 @@
+{% load crispy_forms_tags %}
+<div id="plan" class="tab-pane fade in active">	 		  
+
+	  	  <div class="tab-content" >
+	  	  {% if project_plan_data %}
+	  	   <div class="table-responsive">
+	  	  <table id="mytable" class="table table-condensed table-striped table-bordered table-hover no-margin">
+					<thead><tr>
+					<th style="width:20%">Project Plan</th>
+					<th style="width:20%">Business Plan</th>
+					<th style="width:20%">Wiki Link</th>
+					<th style="width:20%">Prototype Link</th>
+					<th style="width:20%">Web Link</th>
+
+					</tr>
+					</thead>
+   			 <tbody>
+			      <tr>
+			         <td><a href="{{project_plan_data.project_plan}}">{{project_plan_data.project_plan}}</a></td>
+			          <td><a href="{{project_plan_data.business_plan}}">{{project_plan_data.business_plan}}</a></td>
+			           <td><a href="{{project_plan_data.wiki_link}}">{{project_plan_data.wiki_link}}</a></td>
+			           <td><a href="{{project_plan_data.prototype_url}}">{{project_plan_data.prototype_url}}</a></td>
+			            <td><a href="{{project_plan_data.weblink_url}}">{{project_plan_data.weblink_url}}</a></td>
+			      </tr>
+			      </tbody>
+			      </table></div>
+			 {% endif %}
+	  	  		<div class="form-group form-horizontal">
+				    <div class="col-lg-12">
+				        <div class="form-group col-lg-12">
+				        <form class="form" method='POST' action="">{% csrf_token %}
+				           {{plan_form|crispy}}
+							<input type="submit" name = "plan" class="btn btn-default" style="width: 100%;" value="Save">
+				         </form>
+				        </div>
+				    </div>
+				   
+				</div>
+		  </div>
+		  <!--  <button type="submit" class="btn btn-default pull-right" href="">Save Changes</a>
+		   </form>	 -->
+    </div>

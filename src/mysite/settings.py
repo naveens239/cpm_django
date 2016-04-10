@@ -15,7 +15,6 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
 
@@ -30,8 +29,8 @@ ALLOWED_HOSTS = []
 EMAIL_USE_TLS = True 
 EMAIL_USE_SSL = False
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'ndavids239@gmail.com'
-EMAIL_HOST_PASSWORD = 'Triumph23:1'
+EMAIL_HOST_USER = '<email>'
+EMAIL_HOST_PASSWORD = '<password>'
 EMAIL_PORT = 587
 
 
@@ -53,6 +52,8 @@ INSTALLED_APPS = [
 
     # my apps
     'cpm',
+    'rest_framework',
+    'api',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -151,4 +152,10 @@ SITE_ID = 1
 LOGIN_REDIRECT_URL='/profile/'
 #Crispy form tags settings
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    )
+}
 

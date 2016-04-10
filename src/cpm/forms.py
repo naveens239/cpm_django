@@ -1,6 +1,10 @@
 from django import forms
 from django.db import models
-from .models import SignUp,Project,Stage,StageSetting,Team,Role,Plan
+from .models import SignUp,Project,Stage,StageSetting,Team,Role,Plan, Schedule, Material
+from .models import Prototype, ScheduleComment, MaterialComment
+from django.utils import timezone
+
+
 
 
 class ContactForm(forms.Form):
@@ -85,4 +89,69 @@ class ProjectStageForm(forms.ModelForm):
 class ProjectPlanForm(forms.ModelForm):
   class Meta:
       model = Plan 
-      fields = ["project_plan","business_plan","wiki_link"]
+      fields = ["project_plan","business_plan","wiki_link","prototype_url","weblink_url"]
+  project_plan = forms.URLField(required=False)
+  business_plan = forms.URLField(required=False)
+  wiki_link = forms.URLField(required=False)
+  prototype_url = forms.URLField(required=False)
+  weblink_url = forms.URLField(required=False)
+
+class ScheduleForm(forms.ModelForm):
+  class Meta:
+    model = Schedule 
+    fields = ["task_name","start_date","end_date"]
+  assigned_to = forms.ChoiceField(required = True,choices = ((role.id, role.name) for role in Role.objects.all()))
+  start_date = forms.DateField(required = True,widget=forms.DateInput(attrs={'class': 'datepick'}))
+  end_date =forms.DateField(required = True, widget=forms.DateInput(attrs={'class': 'datepick'}))
+
+
+class ScheduleEditForm(forms.ModelForm):
+  class Meta:
+    model = Schedule
+    fields= ["task_name","model_instance"]
+  assigned_to = forms.ChoiceField(choices = ((role.id, role.name) for role in Role.objects.all()))
+  start_date = forms.DateField(required=False,widget=forms.DateInput(attrs={'class': 'datepick'}))
+  end_date =forms.DateField(required=False,widget=forms.DateInput(attrs={'class': 'datepick'}))
+  model_instance = forms.CharField(widget=forms.HiddenInput())
+
+
+class ScheduleCommentForm(forms.ModelForm):
+  class Meta:
+    model = ScheduleComment
+    fields= ["author","model_instance"]
+  model_instance = forms.CharField(widget=forms.HiddenInput())
+  # comment = forms.CharField(required=True,max_length=2000,label=("Comment:"),error_messages={'required':'My Field',})
+
+class MaterialForm(forms.ModelForm):
+  class Meta:
+    model = Material 
+    fields = ["order_category","order_sub_category","order_item","order_quantity","order_unit_price"]
+  order_category = forms.CharField(required=True,max_length=500)
+  order_sub_category = forms.CharField(required=True,max_length=500)
+  order_item = forms.CharField(required=True,max_length=500)
+  order_item_url = forms.URLField(required=True,max_length=1000)
+  order_quantity =  forms.IntegerField(required=True)
+  order_unit_price = forms.DecimalField(required=True,max_digits=6, decimal_places=2)
+  def __init__(self, *args, **kwargs):
+    super(MaterialForm, self).__init__(*args, **kwargs)
+    self.fields['order_item'].label = "Item"
+    self.fields['order_quantity'].label = "Quantity"
+    self.fields['order_unit_price'].label = "Unit Price"
+    self.fields['order_item_url'].label = "URL to Item"
+    self.fields['order_category'].label = "Category"
+    self.fields['order_sub_category'].label = "Sub Category"
+
+
+class MaterialCommentForm(forms.ModelForm):
+  class Meta:
+    model = MaterialComment
+    fields= ["author","model_instance"]
+  model_instance = forms.CharField(widget=forms.HiddenInput())
+
+class PrototypeForm(forms.ModelForm):
+  class Meta:
+    model = Prototype
+    fields=["pname","description","photo"]
+  pname = forms.CharField(required=True,max_length=500,label=("Picture Title:"),error_messages={'required':'My Field',})
+  description = forms.CharField(required=True,max_length=500,widget=forms.Textarea,label=("Picture Description:"),error_messages={'required':'My Field',})
+  photo = forms.ImageField()

@@ -1,0 +1,21 @@
+{% load crispy_forms_tags%}
+<!-- Modal -->
+    <div class="modal fade" id="imagemodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="photo_id" type="hidden">{{item.id}}</h4>
+                     <h4 class="modal-title" id="photo_title">{{item.pname}}</h4>
+
+                </div>
+                <div class="modal-body addright"  id="modelimg1" ng-repeat="Spaces in SpaceList">
+
+                    <h4 class="modal-title" id="photo_upload_on">{{item.uploaded_on}}</h4>
+                    <img id="photo_view" src="{{item.photo.url}}"style="width:400px; height: 270px;">
+                    <p id = "photo_desc"class="parapadding">{{item.description}}<br/></p>
+                </div>
+
+
+            </div>
+        </div>

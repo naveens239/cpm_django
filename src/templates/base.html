@@ -1,53 +1,32 @@
 {% load staticfiles %}
-
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <meta name="description" content="">
-    <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
     <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
-
     <title>{% block head_title%}CPM Interface{% endblock%}</title>
 
     {% include 'head_css.html' %}
     <style>
-   {% block style %}
-   
-   {% endblock %}
-   </style>
-
-
-
+    {% block style %}{% endblock %}
+    </style>
+    {% block css_head_page %}{% endblock %}
   </head>
-
   <body>
-
     <!-- Static navbar -->
-
     {% include 'nav_bar.html'%}
 
-    {% block jumbotron%}
-
-     
-
-     {% endblock%}
-
+    {% block jumbotron%}{% endblock%}
     <div class="container">
-
       <!-- Main component for a primary marketing message or call to action -->
-
      {% block content %}
-
      {% endblock %}
     </div> <!-- /container -->
-
-
    {% include 'javascript.html'%}
+   {% block javascript_page %}{% endblock %}
+   {% block js_body_page %}{% endblock %}
   </body>
 </html>

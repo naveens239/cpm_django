@@ -2,6 +2,7 @@
 <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
+    
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
     <script src="{% static 'js/bootstrap.min.js' %}"></script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
@@ -9,11 +10,29 @@
   <!--   <script src="{% static 'js/jquery-1.10.2.js' %}"></script> -->
     <script src="{% static 'js/jquery-ui.js' %}"></script>
 
+<!--     <script language="javascript" type="text/javascript" src="{% static 'js/jquery.jqplot.js' %}"></script>
+    <script language="javascript" type="text/javascript" src="{% static 'js/jqplot.logAxisRenderer.js' %}"></script> -->
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/highcharts-more.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <!-- <link rel="stylesheet" type="text/css" href="jquery.jqplot.css" /> -->
+
     <script>
       $(function() {
-        $( ".datepicker" ).datepicker();
+        $( ".datepicker" ).datepicker({ changeMonth: true, changeYear:true });
       });
-    
+     $(function() {
+        $( '#datepick1' ).datepicker();
+      });
+      $(function() {
+        $( '#datepick2' ).datepicker();
+      });
+      $(function() {
+        $( '#datepick3' ).datepicker();
+      });
+      $(function() {
+        $( '#datepick4' ).datepicker();
+      });
       $(document).ready(function(){
         $("#mytable #checkall").click(function () {
                 if ($("#mytable #checkall").is(':checked')) {
@@ -37,11 +56,48 @@
           $("#edit-modal-header-ele-id").val($(this).closest('tr').find('.row-ele-id').text());
           $("#edit-modal-ele-name").val($(this).closest('tr').find('.row-ele-name').text());
           $("#edit-modal-ele-role").text($(this).closest('tr').find('.row-ele-role').text());
-
          });
+
       $('button.delete').on('click',function(){
       $("#deleteModal").modal("show");
           $("#delete-modal-header-ele-id").val($(this).closest('tr').find('.row-ele-id').text());
          });
 
+
+
+       // $(document).ready(function(){
+       //    $.jqplot('chartdiv',  [[[1, 2],[3,5.12],[5,13.1],[7,33.6],[9,85.9],[11,219.9]]],
+       //    { title:'Exponential Line',
+       //      axes:{yaxis:{renderer: $.jqplot.LogAxisRenderer}},
+       //      series:[{color:'#5FAB78'}]
+       //    });
+       //  });
+    //   $(document).ready(function(){
+    //     var finInst = jQuery.parseJSON( "{{ schedule_data }}" );
+
+    //     plot5 = $.jqplot('chartdiv',  [[[1, 2],[3,5.12],[5,13.1],[7,33.6],[9,85.9],[11,219.9]]]{
+    //         captureRightClick: true,
+    //         seriesDefaults:{
+    //             renderer:$.jqplot.BarRenderer,
+    //             shadowAngle: 135,
+    //             rendererOptions: {
+    //                 barDirection: 'horizontal',
+    //                 highlightMouseDown: true   
+    //             },
+    //             pointLabels: {show: true, formatString: '%d'}
+    //         },
+    //         legend: {
+    //             show: true,
+    //             location: 'e',
+    //             placement: 'outside'
+    //         },
+    //         axes: {
+    //             yaxis: {
+    //                 renderer: $.jqplot.CategoryAxisRenderer
+    //             }
+    //         }
+    //     });
+    // });
+
 </script>
+

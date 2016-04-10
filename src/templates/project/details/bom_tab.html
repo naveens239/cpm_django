@@ -1,0 +1,44 @@
+{% load crispy_forms_tags %}
+<div id="bom" class="tab-pane fade">
+	<div class="tab-content" style="display: inline ; text-align: left">
+		<button class="btn btn-default pull-right" data-title="Add" data-toggle="modal" data-target="#add_order">New Order</button>
+		<div style="clear:both"></div>
+		<h4 class="text-align-center">View Orders</h4>
+   		<h5 class="text-align-center">{{order_message}}</h5>
+   		{% if order_data %}
+	    <div class="table-responsive">
+			<table id="orderTable" class="table table-condensed table-striped table-bordered table-hover no-margin">
+				<thead><tr>
+					<th data-field="order_id" data-visible="false" style="display:none;"></th>
+					<th style="width:10%">Category</th>
+					<th style="width:15%">Sub Category</th>
+					<th style="width:10%">Item</th>
+					<th style="width:15%">Item URL</th>
+					<th style="width:10%">Quantity</th>
+					<th style="width:10%">Unit Price</th>
+					<th data-field="order_status_id" data-visible="false" style="display:none;"></th>
+					<th style="width:15%">Order Status</th>
+					<th style="width:5%">Comment</th>
+					<th style="width:5%">Edit</th>
+					<th style="width:5%">Delete</th>
+				</tr></thead>
+	 			<tbody id="orderTableBody">
+
+			   </tbody>
+
+			</table>
+			</div>
+
+
+{% endif %}
+
+
+{% include "project/details/bom_modal/add.html" %}
+
+{% include "project/details/bom_modal/edit.html" %}
+
+{% include "project/details/bom_modal/delete.html" %}
+
+{% include "project/details/bom_modal/comment.html" %}
+</div>
+</div>
