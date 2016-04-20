@@ -222,20 +222,18 @@ def projectsettings(request,name):
    form_stage = ProjectStageForm(request.POST or None)
    team_add_form = TeamAddForm(request.POST or None)
    team_edit_form = TeamEditForm(request.POST or None)
-   print 'here before try'
    try:
-       print 'here inside try'
        team_data = None
-       project_stage_data = None
-       project_stage_data = StageSetting.objects.get(project_name=project_data.id)
        team_data = Team.objects.filter(project_name=project_data.id)
-       print 'team_data', team_data
-       print 'pre checked items',project_stage_data.checked_items
+   except Team.DoesNotExist:
+       team_data = None
+   try:
+       project_stage_data = None
+       project_stage_data = StageSetting.objects.get(project_name=project_data.id)      
        form_stage = ProjectStageForm(initial={'stage_item': project_stage_data.checked_items})
    except StageSetting.DoesNotExist:
        project_stage_data = None
-   except Team.DoesNotExist:
-       team_data = None
+
     
    context={
         "stage_form":form_stage,
