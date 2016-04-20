@@ -29,8 +29,8 @@ ALLOWED_HOSTS = []
 EMAIL_USE_TLS = True 
 EMAIL_USE_SSL = False
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = '<email>'
-EMAIL_HOST_PASSWORD = '<password>'
+EMAIL_HOST_USER = 'ndavids239@gmail.com'
+EMAIL_HOST_PASSWORD = 'Triumph23:1david'
 EMAIL_PORT = 587
 
 

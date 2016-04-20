@@ -367,7 +367,7 @@
 // });
   $('button.delete_image').on('click',function(){
      var imageId = $(this).data('id'); 
-     alert(imageId);
+     //alert(imageId);
      $('#deleteImageModal').modal("show");
      $("#delete-modal-header-ele-image-id").val($(this).data('id'));
      

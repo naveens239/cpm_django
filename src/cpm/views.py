@@ -515,25 +515,26 @@ def projectdetails(request,name):
           prototype_data.delete()
           #message="Order Deleted Successfully"
       try:
-       
-         order_data = None
          project_plan_data = None
-         schedule_data = None
-         prototype_data = None
-         print ('here inside rt')
          project_plan_data = Plan.objects.get(project_name=project_data.id)
-         schedule_data = Schedule.objects.filter(project_name=project_data.id)
-         order_data = Material.objects.filter(project_name=project_data.id)
-         prototype_data = Prototype.objects.filter(project_name=project_data.id)
-         print schedule_data
       except Plan.DoesNotExist:
-         project_plan_data = None
-      except Schedule.DoesNotExist:
-         schedule_data = None
+         project_plan_data = None   
+      try:
+         order_data = None
+         order_data = Material.objects.filter(project_name=project_data.id)
       except Material.DoesNotExist:
          order_data = None
+      try:
+         schedule_data = None
+         schedule_data = Schedule.objects.filter(project_name=project_data.id)
+      except Schedule.DoesNotExist:
+         schedule_data = None
+      try:   
+         prototype_data = None
+         prototype_data = Prototype.objects.filter(project_name=project_data.id)
       except Prototype.DoesNotExist:
          prototype_data = None
+
       plan_form = ProjectPlanForm(request.POST or None)
       schedule_form = ScheduleForm(request.POST or None)
       schedule_edit_form = ScheduleEditForm(request.POST or None)

@@ -73,7 +73,6 @@
 
 // refresh the corresponding task data in that table
 	function refresh_task_table(data) {
-
 		var tbody = $("<tbody></tbody>")
 
 		for (var i = 0; i < data.length; i++) {
@@ -174,6 +173,7 @@
 			success: function(data) {
 				$(document).ready(function() {
 					g_task_data = data;
+          console.log(data);
 					refresh_task_table(data);
 				});
 			}
@@ -201,7 +201,7 @@
   function refresh_order_table(data) {
 
     var tbody = $("<tbody></tbody>")
-
+    console.log('inside order table itself');
     for (var i = 0; i < data.length; i++) {
       var col_id = $("<td class=\"row-order-id\" style=\"display:none;\"></td>").text(data[i].id.toString());
       var col_category = $("<td></td>").text(data[i].order_category.toString());
