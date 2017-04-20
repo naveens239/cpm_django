@@ -125,18 +125,22 @@ class ScheduleCommentForm(forms.ModelForm):
 class MaterialForm(forms.ModelForm):
   class Meta:
     model = Material 
-    fields = ["order_category","order_sub_category","order_item","order_quantity","order_unit_price"]
+    fields = ["order_category","order_sub_category","order_item","order_vendor","order_item_url","order_quantity","order_currency","order_unit_price"]
   order_category = forms.CharField(required=True,max_length=500)
   order_sub_category = forms.CharField(required=True,max_length=500)
   order_item = forms.CharField(required=True,max_length=500)
+  order_vendor = forms.CharField(required=True, max_length=500)
   order_item_url = forms.URLField(required=True,max_length=1000)
   order_quantity =  forms.IntegerField(required=True)
+  order_currency =  forms.CharField(required=True,max_length=5)
   order_unit_price = forms.DecimalField(required=True,max_digits=6, decimal_places=2)
   def __init__(self, *args, **kwargs):
     super(MaterialForm, self).__init__(*args, **kwargs)
     self.fields['order_item'].label = "Item"
     self.fields['order_quantity'].label = "Quantity"
+    self.fields['order_currency'].label = "Currency"
     self.fields['order_unit_price'].label = "Unit Price"
+    self.fields['order_vendor'].label = "Vendor"
     self.fields['order_item_url'].label = "URL to Item"
     self.fields['order_category'].label = "Category"
     self.fields['order_sub_category'].label = "Sub Category"
@@ -155,3 +159,6 @@ class PrototypeForm(forms.ModelForm):
   pname = forms.CharField(required=True,max_length=500,label=("Picture Title:"),error_messages={'required':'My Field',})
   description = forms.CharField(required=True,max_length=500,widget=forms.Textarea,label=("Picture Description:"),error_messages={'required':'My Field',})
   photo = forms.ImageField()
+
+class ProcessURLForm(forms.Form):
+  process_link = forms.URLField(required=True,max_length=1000)

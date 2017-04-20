@@ -2,11 +2,12 @@ from django.shortcuts import render, render_to_response,redirect
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from .forms import ContactForm, SignUpForm,AddNewProjectForm,ProjectStageForm,TeamAddForm,TeamEditForm
-from .forms import ProjectPlanForm,ScheduleForm,ScheduleEditForm, MaterialForm, PrototypeForm, ScheduleCommentForm, MaterialCommentForm
+from .forms import ProjectPlanForm,ScheduleForm,ScheduleEditForm, MaterialForm, PrototypeForm, ScheduleCommentForm, MaterialCommentForm, ProcessURLForm
 from django.core.mail import send_mail
 from django.conf import settings
 from .models import Project, Stage, StageSetting, Team, Role,Plan, Schedule, Material, OrderStatus, Prototype, ScheduleComment, MaterialComment
-import json, ast, datetime
+from product_details_scraper import ReadAsin
+import json, ast, datetime,re
 
 
 
@@ -259,6 +260,7 @@ def projectdetails(request,name):
       plan_message = ""
       order_message = ""
       prototype_message =""
+      process_message = ""
       if request.method=='POST' and 'plan' in request.POST:
         plan_form = ProjectPlanForm(request.POST or None)
         if plan_form.is_valid():
@@ -405,30 +407,69 @@ def projectdetails(request,name):
                 schedule_data.delete()
                 task_message="Task Deleted Successfully"
       
-      if request.method=='POST' and 'material_save' in request.POST:
-         material_form = MaterialForm(request.POST or None)
+      if request.method=='POST' and 'process_url' in request.POST:
+         process_url_form = ProcessURLForm(request.POST or None)
+         extracted_data=[]
          print request.POST
-         print 'hererere in order 11111'
-         if material_form.is_valid():   
-            print 'hererere in order 2222'
-            order_category = material_form.cleaned_data.get('order_category')
-            order_sub_category = material_form.cleaned_data.get('order_sub_category')
-            order_item = material_form.cleaned_data.get('order_item')
-            order_item_url = material_form.cleaned_data.get('order_item_url')
-            order_quantity = material_form.cleaned_data.get('order_quantity')
-            order_unit_price = material_form.cleaned_data.get('order_unit_price')
-            order_status = OrderStatus.objects.get(status_id=100)
-            p = Material(project_name=project_data,order_category=order_category,\
-                          order_sub_category=order_sub_category,order_item=order_item,\
-                          order_item_url=order_item_url,order_quantity=order_quantity,\
-                          order_unit_price=order_unit_price, order_status=order_status)
-            p.save()
-            order_message="Order Placed Successfully"
-         else:
-            print 'errror in herereeeee'
-            print request.method
-            oder_message="Order could not be placed"
-            print material_form.errors
+         if process_url_form.is_valid():
+            url = process_url_form.cleaned_data.get('process_link')
+            extracted_data = ReadAsin(url)
+            if len(extracted_data)==0:
+              order_message ="Oops there has been an error. Please add order manually"
+              print 'Please add order manually'
+            else:
+              print 'Found dataaaaaaaaaaaaa'
+              
+              order_category = extracted_data[0]['CATEGORY']
+              order_sub_category = extracted_data[0]['SUBCATEGORY']
+              order_item = extracted_data[0]['ITEM']
+              order_vendor = extracted_data[0]['VENDOR']
+              order_item_url = extracted_data[0]['URL']
+              order_quantity = 1
+              price_string = extracted_data[0]['ORIGINAL_PRICE']
+              print 'string is',price_string
+              match = re.search(r'([\D]+)([\d,.]+)', price_string)
+              output = (match.group(1), match.group(2).replace(',',''))
+              print 'output is',output[1]
+              order_unit_price = output[1]
+              order_currency = output[0]
+              order_status = OrderStatus.objects.get(status_id=100)
+              p = Material(project_name=project_data,order_category=order_category,\
+                            order_sub_category=order_sub_category,order_item=order_item,order_vendor=order_vendor,\
+                            order_item_url=order_item_url,order_quantity=order_quantity,\
+                            order_currency=order_currency,order_unit_price=order_unit_price, order_status=order_status)
+              p.save(),
+              order_message="Order Placed Successfully"
+
+              
+      if request.method=='POST' and 'material_save' in request.POST:
+             material_form = MaterialForm(request.POST or None)
+             print request.POST
+             print 'hererere in order 11111'
+             if material_form.is_valid():   
+                print 'hererere in order 2222'
+                order_category = material_form.cleaned_data.get('order_category')
+                order_sub_category = material_form.cleaned_data.get('order_sub_category')
+                order_item = material_form.cleaned_data.get('order_item')
+                order_vendor = material_form.cleaned_data.get('order_vendor')
+                order_item_url = material_form.cleaned_data.get('order_item_url')
+                order_quantity = material_form.cleaned_data.get('order_quantity')
+                order_currency = material_form.cleaned_data.get('order_currency')
+                order_unit_price = material_form.cleaned_data.get('order_unit_price')
+                order_status = OrderStatus.objects.get(status_id=100)
+                p = Material(project_name=project_data,order_category=order_category,\
+                              order_sub_category=order_sub_category,order_item=order_item,order_vendor=order_vendor,\
+                              order_item_url=order_item_url,order_quantity=order_quantity,\
+                              order_currency=order_currency,order_unit_price=order_unit_price, order_status=order_status)
+                p.save()
+                if order_message=="":
+                    order_message="Order Placed Successfully"
+             else:
+                print 'errror in herereeeee'
+                print request.method
+                if order_message=="":
+                  order_message="Order could not be placed"
+                print material_form.errors
      
       if request.method=='POST' and 'order_edit' in request.POST:
          material_form = MaterialForm(request.POST or None)
@@ -441,13 +482,16 @@ def projectdetails(request,name):
             category = material_form.cleaned_data.get('order_category')
             sub_category = material_form.cleaned_data.get('order_sub_category')
             quantity = material_form.cleaned_data.get('order_quantity')
+            currency = material_form.cleaned_data.get('order_currency')
             price = material_form.cleaned_data.get('order_unit_price')
+            vendor = material_form.cleaned_data.get('order_vendor')
             url = material_form.cleaned_data.get('order_item_url')
             id_ = request.POST.get("model_instance")
             status_id = request.POST.get('order_status')
             print 'status_id is ',status_id
             print 'model  is ',id_
             print 'before try !!!!!!!'
+            print 'currency is', currency
             try:
                 p = Material.objects.get(id=id_)
                 if item:
@@ -458,10 +502,14 @@ def projectdetails(request,name):
                   p.order_sub_category = sub_category
                 if quantity:
                   p.order_quantity = quantity
+                if currency:
+                  p.order_currency = currency
                 if price:
                   p.order_unit_price = price
                 if url:
                   p.order_item_url = url
+                if vendor:
+                  p.order_vendor = vendor
 
                 p.save()
                 order_message="Order Updated Successfully"
@@ -469,14 +517,15 @@ def projectdetails(request,name):
                 status = OrderStatus.objects.filter(status_id = int(status_id))
                 p = Material(project_name=project_data,order_category=category,\
                           order_sub_category=sub_category,order_item=item,\
-                          order_item_url=url,order_quantity=int(quantity),\
-                          order_unit_price=float(price), order_status=status)
+                          order_item_url=url,order_vendor = vendor,order_quantity=int(quantity),\
+                          order_currency = currency,order_unit_price=float(price), order_status=status)
                 p.save()
                 order_message="Order Updated Successfully"
          else:
             print 'errror in herereeeee'
             print request.method
             order_message="Order Update Not Successful"
+            print material_form.errors
             print 'something went wrong !!!!!!!!'   
 
       if request.method=='POST' and 'order_delete' in request.POST:
@@ -532,7 +581,7 @@ def projectdetails(request,name):
          prototype_data = Prototype.objects.filter(project_name=project_data.id)
       except Prototype.DoesNotExist:
          prototype_data = None
-
+      
       plan_form = ProjectPlanForm(request.POST or None)
       schedule_form = ScheduleForm(request.POST or None)
       schedule_edit_form = ScheduleEditForm(request.POST or None)
@@ -540,6 +589,7 @@ def projectdetails(request,name):
       material_comment_form = MaterialCommentForm(request.POST or None)
       material_form = MaterialForm(request.POST or None)
       prototype_form = PrototypeForm(request.POST or None)
+      process_url_form = ProcessURLForm(request.POST or None)
       context = {
          "project_data":project_data,
          "project_plan_data":project_plan_data,
@@ -558,6 +608,7 @@ def projectdetails(request,name):
          "prototype_data":prototype_data,
          "schedule_comment_form":schedule_comment_form,
          "material_comment_form":material_comment_form,
+         "process_url_form": process_url_form,
       }
       return render(request,"project/details/base.html",context)
       

@@ -48,8 +48,8 @@ class OrderStatusAdmin(admin.ModelAdmin):
 admin.site.register(OrderStatus, OrderStatusAdmin)
 
 class MaterialAdmin(admin.ModelAdmin):
-   list_display = ["project_name","order_category","order_sub_category","order_item",
-                  "order_item_url","order_quantity","order_unit_price","order_status"]
+   list_display = ["project_name","order_category","order_sub_category","order_item","order_vendor",
+                  "order_item_url","order_quantity","order_currency","order_unit_price","order_status"]
 admin.site.register(Material, MaterialAdmin)
 
 class PrototypeAdmin(admin.ModelAdmin):

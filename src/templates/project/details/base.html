@@ -88,7 +88,7 @@ form {
 <br>
 	    
 
-  <ul class="nav nav-tabs">
+  <ul class="nav nav-tabs" id="detail_tabs">
     <li class="active" ><a data-toggle="tab" href="#plan">Plan</a></li>
     <li><a data-toggle="tab" href="#schedule">Schedule</a></li>
     <li><a data-toggle="tab" href="#bom">BOM</a></li>
@@ -117,5 +117,22 @@ form {
 <script>
 	var project_id = {{ project_data.id }};
 </script>
+<script type="text/javascript"> 
+ $('#detail_tabs a').click(function(e) {
+  e.preventDefault();
+  $(this).tab('show');
+});
+
+// store the currently selected tab in the hash value
+$("ul.nav-tabs > li > a").on("shown.bs.tab", function(e) {
+  var id = $(e.target).attr("href").substr(1);
+  window.location.hash = id;
+});
+
+// on load of the page: switch to the currently selected tab
+var hash = window.location.hash;
+$('#detail_tabs a[href="' + hash + '"]').tab('show');
+</script>
+
 <script src="{% static 'js/project/details.js' %}"></script>
 {% endblock %}

@@ -13,7 +13,6 @@ class SignUp(models.Model):
 	
 	def __unicode__(self): # python 3 is __str__
 	   return str(self.first_name+" "+self.last_name)
-    
 class Project(models.Model):
 	name = models.CharField(max_length=50, blank=False, null=False, unique=True)
 	status = models.CharField(max_length=15,blank = False,null=False)
@@ -23,6 +22,7 @@ class Project(models.Model):
 
 	def __unicode__(self):
 		return str(self.name)
+
 
 class Stage(models.Model):
 	stage_number = models.IntegerField(blank=False,null=False,validators=[MaxValueValidator(3),MinValueValidator(1)])
@@ -77,8 +77,10 @@ class Material(models.Model):
 	order_category = models.CharField(max_length=500, blank=False, null=False)
 	order_sub_category = models.CharField(max_length=500, blank=False, null=False)
 	order_item = models.CharField(max_length=500, blank=False, null=False)
+	order_vendor = models.CharField(max_length=500,blank=False, null=False,default='Amazon')
 	order_item_url = models.URLField(max_length=1000)
 	order_quantity =  models.IntegerField(validators=[MaxValueValidator(250),MinValueValidator(0)])
+	order_currency = models.CharField(max_length=5,blank=False, null=False,default='Rs')
 	order_unit_price = models.DecimalField(max_digits=6, decimal_places=2)
 	order_status = models.ForeignKey('OrderStatus')
 
