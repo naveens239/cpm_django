@@ -285,10 +285,10 @@
           console.log(status);
           //if ($(this).closest('tr').find('.row-order-status-id').text() > 100)
             
-          if (status === "Approved" || status === "Shipped" || status === "Delivered")
-            $("#deleteErrorOrderModal").modal("show");
-          else
+          if (status === "Not Placed")
             $("#deleteOrderModal").modal("show");
+          else
+            $("#deleteErrorOrderModal").modal("show");
             $("#delete-modal-header-ele-order-id").val($(this).closest('tr').find('.row-order-id').text());
             //$("#delete-modal-ele-status-id").val($(this).closest('tr').find('.row-order-status-id').text());
 
@@ -395,10 +395,10 @@
               $("#edit-modal-ele-vendor").val(data.order_vendor); 
               $("#edit-modal-ele-url").val(data.order_item_url);  
               //if (data.order_status.status_id > 100)
-              if (data.order_status.name === "Approved" || data.order_status.name === "Shipped" || data.order_status.name === "Delivered")
-                 $("#editErrorOrderModal").modal("show");
-              else 
+              if (data.order_status.name === "Not Placed")
                  $("#editOrderModal").modal("show");
+              else 
+                 $("#editErrorOrderModal").modal("show"); editErrorOrderModal
             }
           })
       });
