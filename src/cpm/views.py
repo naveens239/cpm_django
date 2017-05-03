@@ -419,29 +419,31 @@ def projectdetails(request,name):
               print 'Please add order manually'
             else:
               print 'Found dataaaaaaaaaaaaa'
-              
-              order_category = extracted_data[0]['CATEGORY']
-              order_sub_category = extracted_data[0]['SUBCATEGORY']
-              order_item = extracted_data[0]['ITEM']
-              order_vendor = extracted_data[0]['VENDOR']
-              order_item_url = extracted_data[0]['URL']
-              order_quantity = 1
-              price_string = extracted_data[0]['ORIGINAL_PRICE']
-              print 'string is',price_string
-              match = re.search(r'([\D]+)([\d,.]+)', price_string)
-              output = (match.group(1), match.group(2).replace(',',''))
-              print 'output is',output[1]
-              order_unit_price = output[1]
-              order_currency = output[0]
-              order_status = OrderStatus.objects.get(status_id=100)
-              p = Material(project_name=project_data,order_category=order_category,\
-                            order_sub_category=order_sub_category,order_item=order_item,order_vendor=order_vendor,\
-                            order_item_url=order_item_url,order_quantity=order_quantity,\
-                            order_currency=order_currency,order_unit_price=order_unit_price, order_status=order_status)
-              p.save(),
-              order_message="Order Placed Successfully"
+              try:
+                  order_category = extracted_data[0]['CATEGORY']
+                  order_sub_category = extracted_data[0]['SUBCATEGORY']
+                  order_item = extracted_data[0]['ITEM']
+                  order_vendor = extracted_data[0]['VENDOR']
+                  order_item_url = extracted_data[0]['URL']
+                  order_quantity = 1
+                  order_unit_price = extracted_data[0]['ORIGINAL_PRICE']
+                  # print 'string is',price_string
+                  # match = re.search(r'([\D]+)([\d,.]+)', price_string)
+                  # output = (match.group(1), match.group(2).replace(',',''))
+                  # print 'output is',output[1]
+                  # order_unit_price = output[1]
+                  order_currency = extracted_data[0]['CURRENCY']
+                  order_status = OrderStatus.objects.get(status_id=50)
+                  p = Material(project_name=project_data,order_category=order_category,\
+                                order_sub_category=order_sub_category,order_item=order_item,order_vendor=order_vendor,\
+                                order_item_url=order_item_url,order_quantity=order_quantity,\
+                                order_currency=order_currency,order_unit_price=order_unit_price, order_status=order_status)
+                  p.save(),
+                  order_message="Order Placed Successfully"
+              except:
+                order_message="Oops there has been an error. Please add order manually"
 
-              
+               
       if request.method=='POST' and 'material_save' in request.POST:
              material_form = MaterialForm(request.POST or None)
              print request.POST

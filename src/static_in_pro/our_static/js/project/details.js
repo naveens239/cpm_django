@@ -203,31 +203,89 @@
     var tbody = $("<tbody></tbody>")
     console.log('inside order table itself');
     for (var i = 0; i < data.length; i++) {
+      //var col_id = $("<td class=\"row-order-id\" style=\"display:none;\"></td>").text(data[i].id.toString());
       var col_id = $("<td class=\"row-order-id\" style=\"display:none;\"></td>").text(data[i].id.toString());
       var col_category = $("<td></td>").text(data[i].order_category.toString());
       var col_sub_category = $("<td></td>").text(data[i].order_sub_category.toString());
-      var col_order = $("<td></td>").text(data[i].order_item.toString());
+      var col_order = $("<td style=\"overflow:hidden;white-space:nowrap\"></td>").text(data[i].order_item.toString());
       var col_vendor = $("<td></td>").text(data[i].order_vendor.toString());
-      var col_order_url = $("<td></td>").text(data[i].order_item_url.toString());
+      //var col_order_url = $("<td style=\"overflow:hidden;white-space:nowrap\"></td>").text(data[i].order_item_url.toString());
+      var url = data[i].order_item_url.toString();
+      //var col_order_url = $("<td><a href="+url+">Link</a></td>");
+      var col_order_url = $("<td style=\"overflow:hidden;white-space:nowrap\"><a href="+url+">"+data[i].order_item_url.toString()+"</a></td>");
+      //console.log(url);
       var col_quantity = $("<td></td>").text(data[i].order_quantity.toString());      
       var col_currency = $("<td></td>").text(data[i].order_currency.toString()); 
-      var col_price = $("<td></td>").text(data[i].order_unit_price.toString());
-      var col_status = $("<td class=\"row-order-status-id\" style=\"display:none;\"></td>").text(data[i].order_status.status_id.toString());
-      var col_status_butn =   $('<td><button class=" btn btn-primary show_status" data-title="Status" data-toggle="modal">Track</button></td>');
+      var col_price = $("<td></td>").text(data[i].order_currency.toString()+data[i].order_unit_price.toString());
+      //var col_status = $("<td class=\"row-order-status-id\" style=\"display:none;\"></td>").text(data[i].order_status.status_id.toString());
+      //var col_status = $("<td class=\"row-order-status-id\"></td>").text(data[i].order_status.status_id.toString());
+      //var col_status_butn =   $('<td><button class=" btn btn-primary show_status" data-title="Status" data-toggle="modal">Track</button></td>');
+      var col_status_butn =   $('<td class=\"row-order-status-name\"></td>').text(data[i].order_status.name.toString());
       var col_commnt_butn = $('<td><button class=" btn btn-primary btn-xs comment_order" data-title="Comment" data-toggle="modal"><i class="fa fa-comment fa-lg"></i></button></td>');
       var col_edit_butn = $('<td><button class=" btn btn-primary btn-xs update_order" data-title="Edit" data-toggle="modal"><i class="fa fa-pencil fa-lg"></i></button></td>');
       var col_del_butn = $('<td><button  class="btn btn-danger btn-xs delete_order" data-title="Delete" data-toggle="modal"><i class="fa fa-trash fa-lg"></i></button></td>');
 
-      var row = $("<tr></tr>").append(col_id,col_category,col_sub_category,col_order,col_vendor,col_order_url,col_quantity,col_currency,
-                                      col_price,col_status,col_status_butn,col_commnt_butn,col_edit_butn,col_del_butn);
+      //var row = $("<tr></tr>").append(col_id,col_category,col_sub_category,col_order,col_vendor,col_order_url,col_quantity,col_currency,
+      //                                col_price,col_status,col_status_butn,col_commnt_butn,col_edit_butn,col_del_butn);
+      var row = $("<tr></tr>").append(col_id,col_category,col_sub_category,col_order,col_vendor,col_order_url,col_quantity,
+                                      col_price,col_status_butn,col_commnt_butn,col_edit_butn,col_del_butn);
 
       tbody = tbody.append(row);
+       
     }
 
+    
 
     $('#orderTableBody').html(tbody.html());
+    // $('#orderTable').DataTable({
+    //      bJQueryUI: true,
+    //     "columns": [
+    //       { bVisible : false }, // assume this is the id of the row, so don't show it
+    //       { bVisible : true },
+    //       { bVisible : true },
+    //       { bVisible : true },
+    //       { bVisible : true },
+    //       { bVisible : true },
+    //       { bVisible : true },
+    //       { bVisible : true },
+    //       { bVisible : true },
+    //       { bVisible : false }, 
+
+    //       /* COMMENT */ {
+    //           mRender: function (data, type, row) {
+    //               return '<button class=" btn btn-primary btn-xs comment_order" data-title="Comment" data-toggle="modal" data-id="' + row.id + '"><i class="fa fa-comment fa-lg"></i>COMMENT</button>'
+    //           }
+    //       },
+    //       /* EDIT */ {
+    //           mRender: function (data, type, row) {
+    //               return '<button class=" btn btn-primary btn-xs update_order" data-id="' + row[0] + '">EDIT</a>'
+    //           }
+    //       },
+    //       /* DELETE */ {
+    //           mRender: function (data, type, row) {
+    //               return '<a class="btn btn-danger btn-xs delete_order" data-id="' + row[0] + '">DELETE</a>'
+    //           }
+    //       }              
+    //     ]
+        
+        
+    // });
+    $('#orderTable').DataTable({
+        bJQueryUI: true,
+        dom: 'Bfrtip',
+        buttons: [
+              'copy', 'excel', 'pdf', 'print'
+          ]
+    });
+    
+
+
     $('button.delete_order').on('click',function(){
-          if ($(this).closest('tr').find('.row-order-status-id').text() > 100)
+          var status = $(this).closest('tr').find('.row-order-status-name').text();
+          console.log(status);
+          //if ($(this).closest('tr').find('.row-order-status-id').text() > 100)
+            
+          if (status === "Approved" || status === "Shipped" || status === "Delivered")
             $("#deleteErrorOrderModal").modal("show");
           else
             $("#deleteOrderModal").modal("show");
@@ -336,7 +394,8 @@
               $("#edit-modal-ele-price").val(data.order_unit_price); 
               $("#edit-modal-ele-vendor").val(data.order_vendor); 
               $("#edit-modal-ele-url").val(data.order_item_url);  
-              if (data.order_status.status_id > 100)
+              //if (data.order_status.status_id > 100)
+              if (data.order_status.name === "Approved" || data.order_status.name === "Shipped" || data.order_status.name === "Delivered")
                  $("#editErrorOrderModal").modal("show");
               else 
                  $("#editOrderModal").modal("show");
@@ -353,10 +412,8 @@
         'project_id':project_id,
       },
       success: function(data) {
-        $(document).ready(function() {
-          g_order_data = data;
-          refresh_order_table(data);
-        });
+        g_order_data = data;
+        refresh_order_table(data);
       }
     });     
   }

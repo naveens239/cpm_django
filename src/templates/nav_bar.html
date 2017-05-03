@@ -51,8 +51,8 @@
           {% if request.user.is_authenticated %}
             <p class="navbar-text">Welcome, {{request.user}}</p> 
             <li><a href="{% url 'auth_logout'%}">Logout</a></li>
-            {% else %}
-            <li><a href="{% url 'registration_register'%}">Register</a></li>
+            <!-- {% else %}
+            <!-- <li><a href="{% url 'registration_register'%}">Register</a></li> -->
             {% endif %}
           </ul>
           {% if not request.user.is_authenticated and not "accounts/login" in request.get_full_path %}

@@ -15,21 +15,23 @@
 	    <h5 class="text-align-center">{{order_message}}</h5>
 
    		{% if order_data %}
-	    <div class="table-responsive">
-			<table id="orderTable" class="table table-condensed table-striped table-bordered table-hover no-margin">
+	    <div class="table-responsive" >
+			<table id="orderTable" class="table table-condensed table-striped table-bordered table-hover no-margin" style="table-layout: fixed;">
 				<thead><tr>
-					<th data-field="order_id" data-visible="false" style="display:none;"></th>
-					<th style="width:10%">Category</th>
+					<!-- <th data-field="order_id" data-visible="false" style="display:none;"></th> -->
+					<th data-field="order_id" style="display:none;">Id</th>
+					<th style="width:13%">Category</th>
 					<th style="width:10%">Sub Category</th>
-					<th style="width:19%">Item</th>
+					<th style="width:16%">Item</th>
 					<th style="width:10%">Vendor</th>
 					<th style="width:10%">Item URL</th>
-					<th style="width:5%">Quantity</th>
-					<th style="width:5%">Unit</th>
-					<th style="width:10%">Price</th>
-					<th data-field="order_status_id" data-visible="false" style="display:none;"></th>
-					<th style="width:6%">Order Status</th>
-					<th style="width:5%">Comment</th>
+					<th style="width:5%">Qty</th>
+					<!-- <th style="width:5%">Unit</th> -->
+					<th style="width:7%">Price</th>
+					<!-- <th data-field="order_status_id" data-visible="false" style="display:none;"></th> -->
+					<!-- <th data-field="order_status_id" style="width:3%">Status position</th> -->
+					<th style="width:6%">Status</th>
+					<th style="width:5%">Ask</th>
 					<th style="width:5%">Edit</th>
 					<th style="width:5%">Delete</th>
 				</tr></thead>
