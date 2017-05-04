@@ -24,7 +24,7 @@ SECRET_KEY = 'mn&&xbd$#&_6s##tggx978m2^fn8k5w#s8_4%fue^g=yft^=x$'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['ndave.pythonanywhere.com']
 
 EMAIL_USE_TLS = True 
 EMAIL_USE_SSL = False
