@@ -1,16 +1,29 @@
 from django.shortcuts import render, render_to_response,redirect
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
-from .forms import ContactForm, SignUpForm,AddNewProjectForm,ProjectStageForm,TeamAddForm,TeamEditForm
-from .forms import ProjectPlanForm,ScheduleForm,ScheduleEditForm, MaterialForm, PrototypeForm, ScheduleCommentForm, MaterialCommentForm, ProcessURLForm
+from .forms import ContactForm, SignUpForm,AddNewProjectForm,ProjectStageForm,TeamAddForm,TeamEditForm, TrackingForm
+from .forms import ProjectPlanForm,ScheduleForm,ScheduleEditForm, MaterialForm, PrototypeForm, ScheduleCommentForm, MaterialCommentForm, ProcessURLForm,ExcelForm
 from django.core.mail import send_mail
 from django.conf import settings
 from .models import Project, Stage, StageSetting, Team, Role,Plan, Schedule, Material, OrderStatus, Prototype, ScheduleComment, MaterialComment
+from .models import TrackingInfo, Courier
 from product_details_scraper import ReadAsin
 import json, ast, datetime,re
+import openpyxl
+import aftership as aftership
 
-
-
+api = aftership.APIv4("8a4aab03-8132-4fae-aca8-48c054964e14")
+def excel_courier_loader():
+    wb = openpyxl.load_workbook("C:\Users\acer-pc\Documents\ET\my_project_folder\couriers.xlsx")
+    sheet = wb.get_sheet_by_name('Sheet1')
+    for row in range(2, sheet.max_row + 1):
+       name = sheet['A'+str(row)].value
+       slug = sheet['B'+str(row)].value
+       try:
+          p = Courier(name=name,slug=slug)
+          p.save() 
+       except Exception as e:
+        print str(e)
 # Create your views here.
 def home(request):
     title = "Sign Up Now"
@@ -115,6 +128,19 @@ def addproject(request):
         "title_align_center":title_align_center,
     }
     return render(request, "forms.html", context)
+
+def netproject(request):
+    print request.POST
+    try:
+         material_data = None
+         material_data = Material.objects.all()
+    except:
+         material_data = None
+    context={
+        "material_data":material_data,
+    }
+    
+    return render(request,"net_project_view.html",context)
 
 def projectoverview(request,name):
     print request.POST
@@ -407,6 +433,52 @@ def projectdetails(request,name):
                 schedule_data.delete()
                 task_message="Task Deleted Successfully"
       
+      if request.method=='POST' and 'excel_data' in request.POST:
+         print 'hereeeeee'
+         excel_form = ExcelForm(request.POST, request.FILES)
+         
+         
+         print request.POST
+         if excel_form.is_valid():
+           print 'vaaalidddd'
+           excel = request.FILES['excel_file']
+           print excel
+           name = excel.name
+           extension=[]
+           extension = name.split('.')
+           print extension
+           if extension[1] in ('xlsx','xls'):
+             print "right extension"
+             wb = openpyxl.load_workbook(excel)
+             sheet = wb.get_sheet_by_name('Sheet1')
+             for row in range(2, sheet.max_row + 1):
+               category = sheet['A'+str(row)].value
+               subcategory = sheet['B'+str(row)].value
+               item = sheet['C'+str(row)].value
+               vendor = sheet['D'+str(row)].value
+               url = sheet['E'+str(row)].value
+               quantity = sheet['F'+str(row)].value
+               price = sheet['G'+str(row)].value
+               status = OrderStatus.objects.get(status_id=50)
+               currency = sheet['H'+str(row)].value
+               print category, subcategory, item, vendor, url, quantity, price, status, currency
+               try:
+                  p = Material(project_name=project_data,order_category=category,\
+                                order_sub_category=subcategory,order_item=item,order_vendor=vendor,\
+                                order_item_url=url,order_quantity=quantity,\
+                                order_currency=currency,order_unit_price=price, order_status=status)
+                  p.save() 
+                  order_message =  "Excel sheet successfully processed."
+               except Exception as e:
+                print str(e)
+                order_message =  "Order number "+ str(row)+" could not be saved."
+
+         else:
+           print 'form INVALID'
+           order_message = "Please upload .xls or .xlsx file only"
+           print excel_form.errors
+
+
       if request.method=='POST' and 'process_url' in request.POST:
          process_url_form = ProcessURLForm(request.POST or None)
          extracted_data=[]
@@ -458,11 +530,14 @@ def projectdetails(request,name):
                 order_quantity = material_form.cleaned_data.get('order_quantity')
                 order_currency = material_form.cleaned_data.get('order_currency')
                 order_unit_price = material_form.cleaned_data.get('order_unit_price')
-                order_status = OrderStatus.objects.get(status_id=100)
+                order_status = OrderStatus.objects.get(status_id=50)
+                author = request.user
+                est_lead_time = str(material_form.cleaned_data.get('est_lead_num'))+material_form.cleaned_data.get('est_lead_days')
                 p = Material(project_name=project_data,order_category=order_category,\
                               order_sub_category=order_sub_category,order_item=order_item,order_vendor=order_vendor,\
                               order_item_url=order_item_url,order_quantity=order_quantity,\
-                              order_currency=order_currency,order_unit_price=order_unit_price, order_status=order_status)
+                              order_currency=order_currency,order_unit_price=order_unit_price,\
+                              order_status=order_status,author=author,est_lead_time=est_lead_time)
                 p.save()
                 if order_message=="":
                     order_message="Order Placed Successfully"
@@ -490,6 +565,7 @@ def projectdetails(request,name):
             url = material_form.cleaned_data.get('order_item_url')
             id_ = request.POST.get("model_instance")
             status_id = request.POST.get('order_status')
+
             print 'status_id is ',status_id
             print 'model  is ',id_
             print 'before try !!!!!!!'
@@ -513,9 +589,10 @@ def projectdetails(request,name):
                 if vendor:
                   p.order_vendor = vendor
 
-                p.save()
+                p.save(update_fields=['order_item','order_category','order_sub_category','order_quantity','order_currency','order_unit_price','order_item_url','order_vendor'])
                 order_message="Order Updated Successfully"
             except Material.DoesNotExist:
+                print 'in exception blck'
                 status = OrderStatus.objects.filter(status_id = int(status_id))
                 p = Material(project_name=project_data,order_category=category,\
                           order_sub_category=sub_category,order_item=item,\
@@ -536,7 +613,50 @@ def projectdetails(request,name):
           material_data = Material.objects.get(id=id_)
           material_data.delete()
           order_message="Order Deleted Successfully"
-      
+
+
+      if request.method=='POST' and 'tracking_save' in request.POST:
+          tracking_form = TrackingForm(request.POST)
+          if tracking_form.is_valid():
+            id_ = request.POST.get("model_instance")
+            tracking_num = tracking_form.cleaned_data.get('tracking_number')
+            slug_id = tracking_form.cleaned_data.get('slug')
+            courier = Courier.objects.get(id=slug_id)
+          print 'data is', courier.slug
+          try:
+             api = aftership.APIv4("8a4aab03-8132-4fae-aca8-48c054964e14")
+             try:
+               print api.trackings.post(tracking=dict(slug=courier.slug, tracking_number=tracking_num, title="Title"))
+             except:
+               print 'Tracking number already exists in API'
+             print api.trackings.get(courier.slug, tracking_num)
+             print api.trackings.get(courier.slug, tracking_num, fields=['tag','last_updated_at','location','updated_at','checkpoint_time','shipment_delivery_date','expected_delivery'])
+             material_data = Material.objects.get(id=id_)
+             track_data = TrackingInfo.objects.filter(material=material_data.id)
+             print track_data
+             
+             # recording the tracking to database
+             if track_data:
+                 print "Tracking for material present"
+                 track_data = TrackingInfo.objects.get(material=material_data.id)
+                 track_data.tracking_no = tracking_num
+                 track_data.courier_id = courier
+                 track_data.save()
+                 order_message="Tracking Updated Successfully"
+ 
+             else:
+
+                 p = TrackingInfo(tracking_no = tracking_num, courier_id = courier, material = material_data)
+                 p.save()
+                 order_message="Tracking Recorded Successfully"
+          except Exception as e:
+             print 'tracking for material doesnt exist'
+             print tracking_form.errors
+             print str(e) 
+             order_message = "Tracking Not Found"
+          #material_data = Material.objects.get(id=id_)
+          #material_data.delete()
+          
       if request.method=='POST' and 'prototype_save' in request.POST:
           prototype_form = PrototypeForm(request.POST, request.FILES)
           print 'method is post',request.POST
@@ -592,6 +712,8 @@ def projectdetails(request,name):
       material_form = MaterialForm(request.POST or None)
       prototype_form = PrototypeForm(request.POST or None)
       process_url_form = ProcessURLForm(request.POST or None)
+      excel_form = ExcelForm(request.POST or None)
+      tracking_form = TrackingForm(request.POST or None)
       context = {
          "project_data":project_data,
          "project_plan_data":project_plan_data,
@@ -611,6 +733,8 @@ def projectdetails(request,name):
          "schedule_comment_form":schedule_comment_form,
          "material_comment_form":material_comment_form,
          "process_url_form": process_url_form,
+         "excel_form":excel_form,
+         "tracking_form":tracking_form,
       }
       return render(request,"project/details/base.html",context)
       

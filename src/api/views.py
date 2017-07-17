@@ -50,10 +50,11 @@ def material_list(request, format=None):
         if 'project_id' in params:
             qfilter['project_name'] = int(params['project_id'])
 
-        materials = Material.objects.filter(**qfilter)
+        materials = Material.objects.filter(**qfilter).order_by('-added_on')
         serializer = MaterialSerializer(materials, many=True)
         return Response(serializer.data)
-
+    else:
+        print 'method is ',request.method
 @api_view(['GET','PUT'])
 def material_details(request, pk):
     try:

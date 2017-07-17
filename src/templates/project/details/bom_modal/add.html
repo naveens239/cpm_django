@@ -12,9 +12,14 @@
 				{{schedule_form|crispy}}
 				<input class='btn btn-block btn-primary' name = "schedule_save" type='submit' value = "Submit">
 			</form> -->
-             <form  class="form"  method='POST' enctype="application/x-www-form-urlencoded" action="">
+             <form class="form"  method='POST' enctype="application/x-www-form-urlencoded" action="">
              	{% csrf_token %}
-             	{{ material_form|crispy }}
+             	<!-- {{ material_form|crispy }} -->
+                {% for mat in material_form %}
+                     <div class="col-sm-6">
+                       <div style="font-size: 15px;">{{ mat.label_tag }}</div> {{ mat }}<br>
+                    </div>
+                {% endfor %}
 				<input type="submit" name = "material_save" class="btn btn-warning btn-lg" style="width: 100%;" value="Place Order"> 
 			</form>   
 	 

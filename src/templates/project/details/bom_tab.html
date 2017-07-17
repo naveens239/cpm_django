@@ -8,11 +8,23 @@
 		<div style="clear:both"></div>
 		
    		
-   		<form class="form" action="" method="POST">{% csrf_token %}
+   		<form class="form" action="" method="POST" >{% csrf_token %}
 		    {{ process_url_form|crispy }}
 		    <button class="btn btn-default" name="process_url" type="submit">Process URL</button>
-	    </form>
+	    </form><br>
+	    
+		<!-- <form class="form" method="POST" action="" enctype="multipart/form-data">{% csrf_token %}
+  			<input type="file"  name="excel_data" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
+  			<button class="btn btn-default"  type="submit">Upload Excel</button>
+		</form>  -->
+        <form class="form" method='POST' action="" enctype="multipart/form-data">{% csrf_token %}
+			{{excel_form|crispy}}
+			<button class="btn btn-default" name="excel_data" type="submit">Upload Excel</button>
+		</form> 
+	
+
 	    <h5 class="text-align-center">{{order_message}}</h5>
+
 
    		{% if order_data %}
 	    <div class="table-responsive" >
@@ -20,20 +32,25 @@
 				<thead><tr>
 					<!-- <th data-field="order_id" data-visible="false" style="display:none;"></th> -->
 					<th data-field="order_id" style="display:none;">Id</th>
+					<th data-field="added-on" style="display:none;"></th>
+					<th style="width:6%">Date</th>
 					<th style="width:13%">Category</th>
-					<th style="width:10%">Sub Category</th>
-					<th style="width:16%">Item</th>
+					<!-- <th data-field="sub_category" style="display:none;">Sub Category</th> -->
+					<th style="width:10%">Item</th>
 					<th style="width:10%">Vendor</th>
-					<th style="width:10%">Item URL</th>
+					<th style="width:5%">Item URL</th>
 					<th style="width:5%">Qty</th>
 					<!-- <th style="width:5%">Unit</th> -->
 					<th style="width:7%">Price</th>
+					<th style="width:5%">ELT</th>
 					<!-- <th data-field="order_status_id" data-visible="false" style="display:none;"></th> -->
 					<!-- <th data-field="order_status_id" style="width:3%">Status position</th> -->
-					<th style="width:6%">Status</th>
-					<th style="width:5%">Ask</th>
-					<th style="width:5%">Edit</th>
-					<th style="width:5%">Delete</th>
+					<th style="width:9%">Status</th>
+                    <th style="width:5%">Track</th>
+					<!-- <th style="width:5%">Ask</th> -->
+					<th style="width:15%">Modify</th>
+					<!-- <th style="width:5%">Delete</th> -->
+
 				</tr></thead>
 	 			<tbody id="orderTableBody">
 
@@ -53,5 +70,7 @@
 {% include "project/details/bom_modal/delete.html" %}
 
 {% include "project/details/bom_modal/comment.html" %}
+
+{% include "project/details/bom_modal/track.html" %}
 </div>
 </div>

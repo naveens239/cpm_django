@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 from PIL import Image
+
 # Create your models here.
 class SignUp(models.Model):
 	email = models.EmailField()
@@ -77,12 +78,15 @@ class Material(models.Model):
 	order_category = models.CharField(max_length=500, blank=False, null=False)
 	order_sub_category = models.CharField(max_length=500, blank=False, null=False)
 	order_item = models.CharField(max_length=500, blank=False, null=False)
-	order_vendor = models.CharField(max_length=500,blank=False, null=False,default='Amazon')
+	order_vendor = models.CharField(max_length=500,blank=True, null=True,default='Amazon')
 	order_item_url = models.URLField(max_length=1000)
-	order_quantity =  models.IntegerField(validators=[MaxValueValidator(250),MinValueValidator(0)])
-	order_currency = models.CharField(max_length=5,blank=False, null=False,default='Rs')
-	order_unit_price = models.DecimalField(max_digits=6, decimal_places=2)
+	order_quantity =  models.IntegerField(validators=[MaxValueValidator(250),MinValueValidator(1)])
+	order_currency = models.CharField(max_length=5,blank=True, null=True,default='Rs')
+	order_unit_price = models.DecimalField(max_digits=6, decimal_places=2,validators=[MinValueValidator(0)])
 	order_status = models.ForeignKey('OrderStatus')
+	author = models.CharField(max_length=200,blank=False)
+	added_on = models.DateTimeField(auto_now_add = False, auto_now = True)
+	est_lead_time = models.CharField(max_length=10,blank=False)
 
 class Prototype(models.Model):
 	project_name = models.ForeignKey('Project',unique=False)
@@ -102,6 +106,18 @@ class ScheduleComment(models.Model):
 	author = models.CharField(max_length=200,blank=False)
 	commented_on = models.DateTimeField(auto_now_add = False, auto_now = True)
 	comment = models.CharField(max_length=2000,blank=False)
+
+class Courier(models.Model):
+	name = models.CharField(max_length=200,blank=True)
+	slug = models.CharField(max_length=200,blank=True)
+	def __unicode__(self):
+		return str(self.name)
+
+class TrackingInfo(models.Model):
+	tracking_no = models.CharField(max_length=50,blank=True)
+	courier_id  = models.ForeignKey('Courier',unique=False)
+	added_on = models.DateTimeField(auto_now_add = False, auto_now = True)
+	material = models.ForeignKey('Material',unique=False)
 
 
 

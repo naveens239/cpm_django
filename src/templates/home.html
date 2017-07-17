@@ -9,6 +9,7 @@
 .jumbotron{
  	background-color: rgba(206, 200, 182, 0.47);
  	color:#261b06;
+ 	height: 500px;
  }
 
  .btn-primary{
@@ -37,6 +38,7 @@
 }
 .container{
   font-size: 17px;
+  text-align: center;
 }
  {% endblock %}
  </style>
@@ -47,16 +49,14 @@
  
 <div class="container">
 	<div class ="row">
-		<div class='col-sm-6'>
-		        <h1>Capstone Project Management</h1>
-		        <p>Login / Signup to view your projects and get started.</p>
+		<div class='col-sm-12' style="margin-top: 75px;">
+		        <h1>MINT</h1>
+		        <!-- <p>Login to view your projects</p> -->
 		      
 		        </div>
-		         <div class='col-sm-6'> 
-		        <!--  <div class='col-sm-6' style="background-color: black; height: 315px;">  -->
-		           <!-- <img src="http://blogs.henrico.k12.va.us/21/files/2014/04/Untitled-11.jpg" class='img-responsive'/> -->
+		         <!--<div class='col-sm-6'> 
 		        	<iframe width="525" height="315" src="https://www.youtube.com/embed/_jHpnb-QmTA" frameborder="0" allowfullscreen  class="embed-responsive-item" ></iframe>
-		         </div> 
+		         </div> --> 
 	</div>
 	</div>
 	
@@ -66,7 +66,7 @@
 {% block content %}
 <div class = "row">
  {% if request.user.is_authenticated %}
- <h1>Welcome {{request.user}}</h1>
+  <!-- <h1>Welcome {{request.user}}</h1> -->
  {% else %}
 <!-- <div class="col-xs-3 pull-right">
 			<p class='lead text-align-center'> {{title}}</p>
@@ -77,7 +77,7 @@
 			</form>
 </div> -->
 			
-<div class='col-sm-3'>
+<!--<div class='col-sm-3'>
  <img src='{% static "img/capstone1.jpg" %}' class='img-responsive'/> 
 </div>
 <div class='col-sm-3'>
@@ -86,7 +86,7 @@
 </div>
 <div class='col-sm-3'>
 <img src='{% static "img/capstone3.jpg" %}' class='img-responsive'/> 
-</div>
+</div> -->
 </div>
 {% endif %}
 {% endblock %}

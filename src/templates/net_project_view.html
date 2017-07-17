@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+<style>
+ {% block style %}
+.jumbotron{
+    background-color: rgba(206, 200, 182, 0.47);
+    color:#261b06;
+ }
+
+ .btn-primary{
+    background-color: #261b06;
+    border-color:  #261b06;
+ }
+ .btn-primary:hover{
+    background-color: rgba(46, 110, 105, 0.9);
+    border-color:  #473108;
+ }
+ .btn-default{
+    background-color: #261b06;
+    border-color:  #261b06;
+    color: #fff;
+ }
+ .btn-default:hover{
+    background-color: rgba(46, 110, 105, 0.9);
+    border-color:  #473108;
+    color: #fff;
+ }
+.jumbotron p a{
+    color: rgba(22, 158, 148, 0.91) !important;
+    font-size: 15px;
+}
+.jumbotron p{
+    font-size: 15px;
+}
+.jumbotron p a:hover{
+    color: rgba(46, 110, 105, 0.9) !important;
+    font-size: 15px;
+}
+.container{
+  font-size: 17px;
+}
+ {% endblock %}
+ </style>
+{% block jumbotron %}
+<div class="jumbotron">
+<div class="container">
+<div class="btn-toolbar">
+<a type = "button" class="btn btn-default pull-right" href="{% url 'profile' %}">Back</a>
+
+<!-- <a type = "button "class="btn btn-default pull-right" href="{% url 'netproject' %}"> View All Projects</a>
+
+<a type = "button "class="btn btn-default pull-right" href="{% url 'addproject' %}"> <i class= "fa fa-plus-circle"></i> New Project</a> -->
+</div>
+
+<div class="row">
+
+<div class='col-sm-12'>
+<h2 class="text-align-center">All Projects</h2>   
+<div class='row'>
+    {% if material_data %}
+      <div class="table-responsive" >
+      <table id="viewTable" class="table table-condensed table-striped table-bordered table-hover no-margin" style="table-layout: fixed;">
+        <thead><tr>
+          <!-- <th data-field="order_id" data-visible="false" style="display:none;"></th> -->
+          <th data-field="order_id" style="display:none;">Id</th>
+          <th data-field="added-on" style="display:none;"></th>
+          <th style="width:6%">Date</th>
+          <th style="width:6%">Project</th>
+          <th style="width:13%">Category</th>
+          <th style="width:10%">Item</th>
+          <th style="width:10%">Vendor</th>
+          <th style="width:5%">Item URL</th>
+          <th style="width:5%">Qty</th>    
+          <th style="width:7%">Price</th>
+          <th style="width:3%">ELT</th>
+          <th style="width:7%">Status</th>
+
+        </tr></thead>
+        <tbody id="viewTableBody">
+
+         </tbody>
+
+      </table>
+      </div>
+
+
+{% endif %}
+  
+    
+</div>
+
+
+</div>
+</div>
+</div>
+{% endblock %}
+

@@ -1,7 +1,9 @@
 from django import forms
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Layout, Div, Submit, HTML, Button, Row, Field,Fieldset
 from django.db import models
 from .models import SignUp,Project,Stage,StageSetting,Team,Role,Plan, Schedule, Material
-from .models import Prototype, ScheduleComment, MaterialComment
+from .models import Prototype, ScheduleComment, MaterialComment, Courier, TrackingInfo
 from django.utils import timezone
 
 
@@ -126,26 +128,42 @@ class MaterialForm(forms.ModelForm):
   class Meta:
     model = Material 
     fields = ["order_category","order_sub_category","order_item","order_vendor","order_item_url","order_quantity","order_currency","order_unit_price"]
-  order_category = forms.CharField(required=True,max_length=500)
-  order_sub_category = forms.CharField(required=True,max_length=500)
+    # widgets = {
+    #         'Category': flopforms.widgets.Input(datalist=Material.objects.all().values_list("order_category","order_category").distinct())
+    #     }
+  #select = forms.CharField(widget=forms.Select(choices=CHOICES))
+  
+  #order_category = forms.CharField(required = True, widget=forms.TextInput(attrs={ms}select=(Material.objects.all().values_list("order_category","order_category").distinct())))
+  order_category = forms.ChoiceField(required = True, choices = Material.objects.all().values_list("order_category","order_category").distinct())
+  #order_category = forms.ChoiceField(required = True, choices = ((mat.order_category,mat.order_category) for mat in Material.objects.all().distinct()))
+  #order_category = forms.CharField(required=True,max_length=500)
+  order_sub_category = forms.ChoiceField(required = True, choices = Material.objects.all().values_list("order_sub_category","order_sub_category").distinct())
+
+  #order_sub_category = forms.CharField(required=True,max_length=500)
   order_item = forms.CharField(required=True,max_length=500)
-  order_vendor = forms.CharField(required=True, max_length=500)
-  order_item_url = forms.URLField(required=True,max_length=1000)
-  order_quantity =  forms.IntegerField(required=True)
-  order_currency =  forms.CharField(required=True,max_length=5)
-  order_unit_price = forms.DecimalField(required=True,max_digits=6, decimal_places=2)
+  order_vendor = forms.ChoiceField(required = True, choices = Material.objects.all().values_list("order_vendor","order_vendor").distinct())
+  order_item_url = forms.URLField(required=False,max_length=1000)
+  order_quantity =  forms.IntegerField(required=True,  min_value=0)
+  RELEVANCE_CHOICES = (("Rs", ("Rs")),("$", ("$")))
+  order_currency =  forms.ChoiceField(required=False,choices=RELEVANCE_CHOICES)
+  order_unit_price = forms.DecimalField(required=False,max_digits=6, decimal_places=2, min_value=0)
+  est_lead_num = forms.IntegerField(required=True,  min_value=1)
+  DAY_CHOICES = (("d","day(s)"),("w", "week(s)"),("m","month(s)"))
+  est_lead_days =forms.ChoiceField(required=False,choices=DAY_CHOICES)
+  #order_status = forms.ChoiceField(required = True,choices= )
   def __init__(self, *args, **kwargs):
     super(MaterialForm, self).__init__(*args, **kwargs)
+    self.fields['order_category'].label = "Category"
+    self.fields['order_sub_category'].label = "Sub Category"
     self.fields['order_item'].label = "Item"
     self.fields['order_quantity'].label = "Quantity"
     self.fields['order_currency'].label = "Currency"
-    self.fields['order_unit_price'].label = "Unit Price"
+    self.fields['order_unit_price'].label = "Estimated Price"
     self.fields['order_vendor'].label = "Vendor"
-    self.fields['order_item_url'].label = "URL to Item"
-    self.fields['order_category'].label = "Category"
-    self.fields['order_sub_category'].label = "Sub Category"
-
-
+    self.fields['order_item_url'].label = "URL to Item" 
+    self.fields['est_lead_num'].label = "Est Lead Time"
+    self.fields['est_lead_days'].label = " "
+    
 class MaterialCommentForm(forms.ModelForm):
   class Meta:
     model = MaterialComment
@@ -161,4 +179,14 @@ class PrototypeForm(forms.ModelForm):
   photo = forms.ImageField()
 
 class ProcessURLForm(forms.Form):
-  process_link = forms.URLField(required=True,max_length=1000)
+  process_link = forms.URLField(required=False,max_length=1000)
+
+class ExcelForm(forms.Form):
+  excel_file = forms.FileField(required=False,label="Excel File")
+
+class TrackingForm(forms.ModelForm):
+  class Meta:
+    model = TrackingInfo
+    fields=["tracking_number","slug"]
+  tracking_number  = forms.CharField(required=False,label="Tracking No:")
+  slug = forms.ChoiceField(required = False,label = "Courier",choices = ((courier.id,courier.name) for courier in Courier.objects.all()))

@@ -1,20 +1,21 @@
 
+
 // // refresh chart with new data
-	function refresh_task_chart(data) {
-		var xAxisData = []
-		var chartData = []
-		for (var i = 0; i < data.length; i++) {
-			xAxisData[i] = data[i].task_name;
-			var d = [];
-			d.push(data[i].assigned_to.name);
-			d.push(Date.parse(data[i].start_date));
-			d.push(Date.parse(data[i].end_date));
-			chartData[i] = d;
-		}
+  function refresh_task_chart(data) {
+    var xAxisData = []
+    var chartData = []
+    for (var i = 0; i < data.length; i++) {
+      xAxisData[i] = data[i].task_name;
+      var d = [];
+      d.push(data[i].assigned_to.name);
+      d.push(Date.parse(data[i].start_date));
+      d.push(Date.parse(data[i].end_date));
+      chartData[i] = d;
+    }
 
-		console.log(chartData);
+    console.log(chartData);
 
-		$('#task_chart').highcharts({
+    $('#task_chart').highcharts({
         chart: {
             type: 'columnrange',
             inverted: true
@@ -39,7 +40,7 @@
         },
 
         tooltip: {
-        	formatter: function() {
+          formatter: function() {
               return ''       + Highcharts.dateFormat('%e %b\'%y', new Date(this.point.low))
                      + ' - '  + Highcharts.dateFormat('%e %b\'%y', new Date(this.point.high));
           }
@@ -52,10 +53,10 @@
                     inside: true,
                     align: 'center',
                     formatter: function() {
-                    	if (this.y === this.point.low) {
-                      	return '' + this.point.name;
+                      if (this.y === this.point.low) {
+                        return '' + this.point.name;
                       } else {
-                      	return 'Hello';
+                        return 'Hello';
                       }
                     }
                     
@@ -67,36 +68,35 @@
         legend: { enabled: false },
 
         series: [{ name: '', data: chartData }]
-	});
-	}
+  });
+  }
 
 
 // refresh the corresponding task data in that table
-	function refresh_task_table(data) {
+  function refresh_task_table(data) {
+    var tbody = $("<tbody></tbody>")
 
-		var tbody = $("<tbody></tbody>")
-
-		for (var i = 0; i < data.length; i++) {
-			var col_id = $("<td class=\"row-ele-id\" style=\"display:none;\"></td>").text(data[i].id.toString());
-			var col_task = $("<td></td>").text(data[i].task_name.toString());
-			var col_assigned = $("<td></td>").text(data[i].assigned_to.name.toString());
-			var col_start = $("<td></td>").text((new Date(data[i].start_date)).toDateString());
-			var col_end = $("<td></td>").text((new Date(data[i].end_date)).toDateString());
+    for (var i = 0; i < data.length; i++) {
+      var col_id = $("<td class=\"row-ele-id\" style=\"display:none;\"></td>").text(data[i].id.toString());
+      var col_task = $("<td></td>").text(data[i].task_name.toString());
+      var col_assigned = $("<td></td>").text(data[i].assigned_to.name.toString());
+      var col_start = $("<td></td>").text((new Date(data[i].start_date)).toDateString());
+      var col_end = $("<td></td>").text((new Date(data[i].end_date)).toDateString());
       var col_commnt_butn = $('<td><button class=" btn btn-primary btn-xs comment_task" data-title="Comment" data-toggle="modal"><i class="fa fa-comment fa-lg"></i></button></td>');
-			var col_edit_butn = $('<td><button class=" btn btn-primary btn-xs update_task" data-title="Edit" data-toggle="modal"><i class="fa fa-pencil fa-lg"></i></button></td>');
-			var col_del_butn = $('<td><button  class="btn btn-danger btn-xs delete_task" data-title="Delete" data-toggle="modal"><i class="fa fa-trash fa-lg"></i></button></td>');
+      var col_edit_butn = $('<td><button class=" btn btn-primary btn-xs update_task" data-title="Edit" data-toggle="modal"><i class="fa fa-pencil fa-lg"></i></button></td>');
+      var col_del_butn = $('<td><button  class="btn btn-danger btn-xs delete_task" data-title="Delete" data-toggle="modal"><i class="fa fa-trash fa-lg"></i></button></td>');
 
-			var row = $("<tr></tr>").append(col_id, col_task, col_assigned, col_start, col_end, col_commnt_butn,col_edit_butn, col_del_butn);
+      var row = $("<tr></tr>").append(col_id, col_task, col_assigned, col_start, col_end, col_commnt_butn,col_edit_butn, col_del_butn);
 
-			tbody = tbody.append(row);
-		}
+      tbody = tbody.append(row);
+    }
 
 
-		$('#taskTableBody').html(tbody.html());
-		$('button.delete_task').on('click',function(){
-      		$("#deleteTaskModal").modal("show");
-          	$("#delete-modal-header-ele-id").val($(this).closest('tr').find('.row-ele-id').text());
-       	});
+    $('#taskTableBody').html(tbody.html());
+    $('button.delete_task').on('click',function(){
+          $("#deleteTaskModal").modal("show");
+            $("#delete-modal-header-ele-id").val($(this).closest('tr').find('.row-ele-id').text());
+        });
     $('button.comment_task').on('click',function(){
           
             $("#task-comment-modal-header-ele-id").val($(this).closest('tr').find('.row-ele-id').text());
@@ -112,7 +112,7 @@
               for (var i = 0; i < data.length; i++) {
                 var col_id = $("<h5 class=\"row-ele-id\" style=\"display:none;\"></h5>").text(data[i].id.toString());
                 var sdate = new Date(data[i].commented_on);
-                var start_date_str = '' + (sdate.getMonth()+1) + '/' + sdate.getDate() + '/' + sdate.getFullYear() + ' '+ sdate.getHours()+':'+sdate.getMinutes();
+                var start_date_str = '' + sdate.getDate() + '/' + (sdate.getMonth()+1) + '/' + sdate.getFullYear() + ' '+ sdate.getHours()+':'+sdate.getMinutes();
                 var col_commented_on = $("<b style=\"color:grey;\"></b>").text(start_date_str);
                 var filler_1 = $("<span></span>").text(" by ");
                 var col_author = $("<span style=\"color:rgb(55, 138, 231);\"></span>").text(data[i].author.toString());
@@ -134,54 +134,55 @@
       });
            $("#commentTaskModal").modal("show");
       });
-    	$('button.update_task').on('click',function(){
-      		var task_id = parseInt($(this).closest('tr').find('.row-ele-id').text());
+      $('button.update_task').on('click',function(){
+          var task_id = parseInt($(this).closest('tr').find('.row-ele-id').text());
 
-      		$.ajax({
-      			url:'/api/schedules/' + task_id,
-      			success: function(data) {
-      				$('#edit-modal-header-ele-id').val(task_id);
-      				$("#edit-modal-ele-task").val(data.task_name);		
-      				$("#id_assigned_to").children("option").each(function(){
-      					if (parseInt($(this).attr("value")) == data.assigned_to.id) {
-      						$(this).attr('selected','');
-      					} else {
-      						$(this).removeAttr('selected');
-      					}
-      				});
-      				var sdate = new Date(data.start_date);
-      				var edate = new Date(data.end_date);
-      				
-      				var start_date_str = '' + (sdate.getMonth()+1) + '/' + sdate.getDate() + '/' + sdate.getFullYear();
-      				var end_date_str = '' + (edate.getMonth()+1) + '/' + edate.getDate() + '/' + edate.getFullYear();
+          $.ajax({
+            url:'/api/schedules/' + task_id,
+            success: function(data) {
+              $('#edit-modal-header-ele-id').val(task_id);
+              $("#edit-modal-ele-task").val(data.task_name);    
+              $("#id_assigned_to").children("option").each(function(){
+                if (parseInt($(this).attr("value")) == data.assigned_to.id) {
+                  $(this).attr('selected','');
+                } else {
+                  $(this).removeAttr('selected');
+                }
+              });
+              var sdate = new Date(data.start_date);
+              var edate = new Date(data.end_date);
+              
+              var start_date_str = '' + (sdate.getMonth()+1) + '/' + sdate.getDate() + '/' + sdate.getFullYear();
+              var end_date_str = '' + (edate.getMonth()+1) + '/' + edate.getDate() + '/' + edate.getFullYear();
 
-      				$("#edit-modal_start-datepick").val(start_date_str);
-      				$("#edit-modal_end-datepick").val(end_date_str);
-          			$("#editTaskModal").modal("show");
-      			}
-      		})
-    	});
-	}
+              $("#edit-modal_start-datepick").val(start_date_str);
+              $("#edit-modal_end-datepick").val(end_date_str);
+                $("#editTaskModal").modal("show");
+            }
+          })
+      });
+  }
 
-	var g_task_data = null;
+  var g_task_data = null;
 // refresh task of that particular project
-	function refresh_task() {
-		$.ajax({
-			url:'/api/schedules',
-			data: {
-				'project_id':project_id,
-			},
-			success: function(data) {
-				$(document).ready(function() {
-					g_task_data = data;
-					refresh_task_table(data);
-				});
-			}
-		});			
-	}
-	refresh_task();
+  function refresh_task() {
+    $.ajax({
+      url:'/api/schedules',
+      data: {
+        'project_id':project_id,
+      },
+      success: function(data) {
+        $(document).ready(function() {
+          g_task_data = data;
+          console.log(data);
+          refresh_task_table(data);
+        });
+      }
+    });     
+  }
+  refresh_task();
 // date picker for start date
-	$(function() {
+  $(function() {
         $( '#edit-modal_start-datepick' ).datepicker();
     });
 // date picker for end date
@@ -190,52 +191,105 @@
     });
 //click of the graph button function
     $(function() {
-    	$('#id-task-view-chart-btn').on('click', function() {
-    		$("#modal-view-chart").modal("show").on('shown.bs.modal', function(){
-    			refresh_task_chart(g_task_data);
-    		});
-    	});
+      $('#id-task-view-chart-btn').on('click', function() {
+        $("#modal-view-chart").modal("show").on('shown.bs.modal', function(){
+          refresh_task_chart(g_task_data);
+        });
+      });
     });
 
 // refresh the corresponding order data in that table
   function refresh_order_table(data) {
 
     var tbody = $("<tbody></tbody>")
-
+    console.log('inside order table itself');
+    console.log(data);
+    
     for (var i = 0; i < data.length; i++) {
+      //var col_id = $("<td class=\"row-order-id\" style=\"display:none;\"></td>").text(data[i].id.toString());
       var col_id = $("<td class=\"row-order-id\" style=\"display:none;\"></td>").text(data[i].id.toString());
-      var col_category = $("<td></td>").text(data[i].order_category.toString());
-      var col_sub_category = $("<td></td>").text(data[i].order_sub_category.toString());
-      var col_order = $("<td></td>").text(data[i].order_item.toString());
+      var col_date = $("<td  style=\"display:none;\"></td>").text(data[i].added_on.toString());
+      var sdate = new Date(data[i].added_on);
+      var hours = sdate.getHours();
+      var mins = sdate.getMinutes();
+      //var ampm = hours >= 12 ? 'pm' : 'am';
+      var year=new Date().getFullYear()+'';
+      year= year.match(/\d{2}$/)
+      var author = data[i].author.toString();
+      var start_date_str = '' + sdate.getDate() + '/' + (sdate.getMonth()+1) + '/' + year + ' '+ hours+':'+mins+" "+author;
+      var col_disp_date = $("<td style=\"font-size:15px\"></td>").text(start_date_str);
+      var col_category = $("<td style=\"font-size:15px\"></td>").text(data[i].order_category.toString()+"- "+data[i].order_sub_category.toString());
+      var col_sub_category = $("<td style=\"font-size:15px\"></td>").text(data[i].order_sub_category.toString());
+      var col_order = $("<td style=\"overflow:hidden;white-space:nowrap;font-size:15px\"></td>").text(data[i].order_item.toString());
       var col_vendor = $("<td></td>").text(data[i].order_vendor.toString());
-      var col_order_url = $("<td></td>").text(data[i].order_item_url.toString());
-      var col_quantity = $("<td></td>").text(data[i].order_quantity.toString()); 
-      var col_currency = $("<td></td>").text(data[i].order_currency.toString());     
-      var col_price = $("<td></td>").text(data[i].order_unit_price.toString());
-      var col_status = $("<td class=\"row-order-status-id\" style=\"display:none;\"></td>").text(data[i].order_status.status_id.toString());
-      var col_status_butn =   $('<td><button class=" btn btn-primary show_status" data-title="Status" data-toggle="modal">Track</button></td>');
-      var col_commnt_butn = $('<td><button class=" btn btn-primary btn-xs comment_order" data-title="Comment" data-toggle="modal"><i class="fa fa-comment fa-lg"></i></button></td>');
-      var col_edit_butn = $('<td><button class=" btn btn-primary btn-xs update_order" data-title="Edit" data-toggle="modal"><i class="fa fa-pencil fa-lg"></i></button></td>');
-      var col_del_butn = $('<td><button  class="btn btn-danger btn-xs delete_order" data-title="Delete" data-toggle="modal"><i class="fa fa-trash fa-lg"></i></button></td>');
+      //var col_order_url = $("<td style=\"overflow:hidden;white-space:nowrap\"></td>").text(data[i].order_item_url.toString());
+      var url = data[i].order_item_url.toString();
+      //var col_order_url = $("<td><a href="+url+">Link</a></td>");
 
-      var row = $("<tr></tr>").append(col_id,col_category,col_sub_category,col_order,col_vendor,col_order_url,col_quantity,
-                                      col_currency,col_price,col_status,col_status_butn,col_commnt_butn,col_edit_butn,col_del_butn);
+      var col_order_url = $("<td style=\"overflow:hidden;white-space:nowrap\"><a target="+"_blank"+" href="+url+">"+"URL"+"</a></td>");
+      //console.log(url);
+      var col_quantity = $("<td></td>").text(data[i].order_quantity.toString());      
+      var col_currency = $("<td></td>").text(data[i].order_currency.toString()); 
+      var col_price = $("<td></td>").text(data[i].order_currency.toString()+data[i].order_unit_price.toString());
+      //var col_status = $("<td class=\"row-order-status-id\" style=\"display:none;\"></td>").text(data[i].order_status.status_id.toString());
+      //var col_status = $("<td class=\"row-order-status-id\"></td>").text(data[i].order_status.status_id.toString());
+      //var col_status_butn =   $('<td><button class=" btn btn-primary show_status" data-title="Status" data-toggle="modal">Track</button></td>');
+      var col_status_butn =   $('<td class=\"row-order-status-name\"></td>').text(data[i].order_status.name.toString());
+      //var col_commnt_butn = $('<td><button class=" btn btn-primary btn-xs comment_order" data-title="Comment" data-toggle="modal"><i class="fa fa-comment fa-lg"></i></button></td>');
+      var col_track_btn =  $('<td><button class=" btn btn-primary track_courier" data-title="Track" data-toggle="modal">Track</button></td>');
+      var col_edit_butn = $('<td><button class=" btn btn-primary btn-xs update_order" data-title="Edit" data-toggle="modal"><i class="fa fa-pencil fa-lg"></i></button>&nbsp;<button  class="btn btn-danger btn-xs delete_order" data-title="Delete" data-toggle="modal"><i class="fa fa-trash fa-lg"></i></button>&nbsp;<button class=" btn btn-primary btn-xs comment_order" data-title="Comment" data-toggle="modal"><i class="fa fa-comment fa-lg"></i></button></td>');
+      //var col_del_butn = $('<td><button  class="btn btn-danger btn-xs delete_order" data-title="Delete" data-toggle="modal"><i class="fa fa-trash fa-lg"></i></button></td>');
 
+      //var row = $("<tr></tr>").append(col_id,col_category,col_sub_category,col_order,col_vendor,col_order_url,col_quantity,col_currency,
+      //                                col_price,col_status,col_status_butn,col_commnt_butn,col_edit_butn,col_del_butn);
+      //var row = $("<tr></tr>").append(col_id,col_category,col_sub_category,col_order,col_vendor,col_order_url,col_quantity,
+      //                                col_price,col_status_butn,col_commnt_butn,col_edit_butn,col_del_butn);
+      //var row = $("<tr></tr>").append(col_id,col_date,col_disp_date,col_category,col_sub_category,col_order,col_vendor,col_order_url,col_quantity,
+      //                                col_price,col_status_butn,col_track_btn,col_edit_butn);
+      var row = $("<tr></tr>").append(col_id,col_date,col_disp_date,col_category,col_order,col_vendor,col_order_url,col_quantity,
+                                      col_price,col_status_butn,col_track_btn,col_edit_butn);
       tbody = tbody.append(row);
     }
-
+    
+      // $('tr').sort(function(a,b){
+      //    return new Date($(a).find('col_date').val()).getTime() < new Date($(b).find('input').val()).getTime() 
+      // }).appendTo(tbody)
 
     $('#orderTableBody').html(tbody.html());
-    $('button.delete_order').on('click',function(){
-          if ($(this).closest('tr').find('.row-order-status-id').text() > 100)
-            $("#deleteErrorOrderModal").modal("show");
-          else
+   
+    $('#orderTable').DataTable({
+        bJQueryUI: true,        
+        dom: 'Bfrtip',
+        buttons: [
+              'copy', 'excel', 'pdf', 'print'
+          ],
+        order: [[1,'desc']]
+    });
+   
+    // to enhance order delete on all pages.
+     $('#orderTable').on('click','button.delete_order',function(){
+    // $('button.delete_order').on('click',function(){
+          var status = $(this).closest('tr').find('.row-order-status-name').text();
+          console.log(status);
+          //if ($(this).closest('tr').find('.row-order-status-id').text() > 100)
+            
+          if (status === "Not Placed")
             $("#deleteOrderModal").modal("show");
+          else
+            $("#deleteErrorOrderModal").modal("show");
             $("#delete-modal-header-ele-order-id").val($(this).closest('tr').find('.row-order-id').text());
             //$("#delete-modal-ele-status-id").val($(this).closest('tr').find('.row-order-status-id').text());
 
         });
-     $('button.comment_order').on('click',function(){
+     $('#orderTable').on('click','button.track_courier',function(){
+          $("#order-track-modal-header-ele-id").val($(this).closest('tr').find('.row-order-id').text());
+          var order_id = parseInt($(this).closest('tr').find('.row-order-id').text());
+          console.log(order_id);
+          console.log('tracking.....');
+          $("#trackOrderModal").modal("show");
+     });
+     $('#orderTable').on('click','button.comment_order',function(){
+     //$('button.comment_order').on('click',function(){
           
             $("#order-comment-modal-header-ele-id").val($(this).closest('tr').find('.row-order-id').text());
             var order_id = parseInt($(this).closest('tr').find('.row-order-id').text());
@@ -251,7 +305,7 @@
               for (var i = 0; i < data.length; i++) {
                 var col_id = $("<h5 class=\"row-ele-id\" style=\"display:none;\"></h5>").text(data[i].id.toString());
                 var sdate = new Date(data[i].commented_on);
-                var start_date_str = '' + (sdate.getMonth()+1) + '/' + sdate.getDate() + '/' + sdate.getFullYear() + ' '+ sdate.getHours()+':'+sdate.getMinutes();
+                var start_date_str = '' + sdate.getDate() + '/' + (sdate.getMonth()+1) + '/' + sdate.getFullYear() + ' '+ sdate.getHours()+':'+sdate.getMinutes();
                 var col_commented_on = $("<b style=\"color:grey;\"></b>").text(start_date_str);
                 var filler_1 = $("<span></span>").text(" by ");
                 var col_author = $("<span style=\"color:rgb(55, 138, 231);\"></span>").text(data[i].author.toString());
@@ -273,7 +327,8 @@
       });
            $("#commentOrderModal").modal("show");
       });
-    $('button.show_status').on('click',function(){
+    $('#orderTable').on('click','button.show_status',function(){ 
+    //$('button.show_status').on('click',function(){
            // var all_order_status = "{{ order_status_data}}";
            // alert(all_order_status);
           // for (i = 0; i < all_order_status.length; i++) {
@@ -320,7 +375,8 @@
               }
           })
         });
-    $('button.update_order').on('click',function(){
+    $('#orderTable').on('click','button.update_order',function(){
+    //$('button.update_order').on('click',function(){
           var order_id = parseInt($(this).closest('tr').find('.row-order-id').text());
           //var status = parseInt($(this).closest('tr').find('.row-status-id').text());
           $.ajax({
@@ -331,15 +387,16 @@
               $("#edit-modal-ele-item").val(data.order_item);    
               $("#edit-modal-ele-category").val(data.order_category);    
               $("#edit-modal-ele-subcategory").val(data.order_sub_category);    
-              $("#edit-modal-ele-quantity").val(data.order_quantity);  
-              $("#edit-modal-ele-currency").val(data.order_currency);   
-              $("#edit-modal-ele-price").val(data.order_unit_price);  
-              $("#edit-modal-ele-vendor").val(data.order_vendor);
+              $("#edit-modal-ele-quantity").val(data.order_quantity);    
+              $("#edit-modal-ele-currency").val(data.order_currency); 
+              $("#edit-modal-ele-price").val(data.order_unit_price); 
+              $("#edit-modal-ele-vendor").val(data.order_vendor); 
               $("#edit-modal-ele-url").val(data.order_item_url);  
-              if (data.order_status.status_id > 100)
-                 $("#editErrorOrderModal").modal("show");
-              else 
+              //if (data.order_status.status_id > 100)
+              if (data.order_status.name === "Not Placed")
                  $("#editOrderModal").modal("show");
+              else 
+                 $("#editErrorOrderModal").modal("show");
             }
           })
       });
@@ -352,88 +409,84 @@
       data: {
         'project_id':project_id,
       },
-      success: function(data) {
-        $(document).ready(function() {
-          g_order_data = data;
-          refresh_order_table(data);
-        });
+
+      success: function(data) {  
+        g_order_data = data;
+        refresh_order_table(data);
       }
     });     
   }
-  refresh_order();
+     refresh_order();
 
- 
-//   $(document).on("click", ".delete_image", function () {
-//      var imageId = $(this).data('id');
-//      alert(imageId);
-//      $("#delete-modal-header-ele-image-id").val(imageId);
-//      $('#deleteImageModal').modal('show');
-// });
   $('button.delete_image').on('click',function(){
      var imageId = $(this).data('id'); 
-     //alert(imageId);
      $('#deleteImageModal').modal("show");
      $("#delete-modal-header-ele-image-id").val($(this).data('id'));
      
    });
+  g_view_mat_data = null;
+ function refresh_view() {
+    console.log('in function');
+    $.ajax({
+      url:'/api/materials',
+      data: {
+        'project_id':project_id,
+      },
+      success: function(data) {  
+        console.log('successs');
+        g_view_mat_data = data;
+        refresh_view_table(data);
+      }
+    });     
+  }
+  refresh_view();
 
-  // function get_prototypes() {
-  //   $.ajax({
-  //     url:'/api/prototypes',
-  //     data: {
-  //       'project_id':project_id,
-  //     },
-  //     success: function(data) {
-  //       $(document).ready(function() {
-  //         g_prototype_data = data;
-  //         //alert(g_prototype_data);
-  //         refresh_gallery(data);
-  //       });
-  //     }
-  //   });     
-  // }
-  // get_prototypes();
+  function refresh_view_table(data) {
 
-  // function refresh_gallery(data) {
-  //   var maindiv = $("<div></div>")
-  //   for (var i = 0; i < data.length; i++) {
-  //     var image_id = $("<div data-toggle=\"modal\" class=\"row-image-id \" ng-repeat=\"Spaces in SpaceList\" style=\"display:none;\"></div>").text(data[i].id.toString());
+    var tbody = $("<tbody></tbody>")
+    console.log('inside view table itself');
+    console.log(data);
+    
+    for (var i = 0; i < data.length; i++) {
+      //var col_id = $("<td class=\"row-order-id\" style=\"display:none;\"></td>").text(data[i].id.toString());
+      var col_id = $("<td class=\"row-order-id\" style=\"display:none;\"></td>").text(data[i].id.toString());
+      var col_date = $("<td  style=\"display:none;\"></td>").text(data[i].added_on.toString());
+      var sdate = new Date(data[i].added_on);
+      var hours = sdate.getHours();
+      var mins = sdate.getMinutes();
+      var year = sdate.getFullYear()+'';
+      year= year.match(/\d{2}$/)
+      var author = data[i].author.toString();
+      var start_date_str = '' + sdate.getDate() + '/' + (sdate.getMonth()+1) + '/' + year + ' '+ hours+':'+mins+" "+author;
+      var col_disp_date = $("<td style=\"font-size:15px\"></td>").text(start_date_str);
+      var col_category = $("<td style=\"font-size:15px\"></td>").text(data[i].order_category.toString()+"- "+data[i].order_sub_category.toString());
+      var col_order = $("<td style=\"overflow:hidden;white-space:nowrap;font-size:15px\"></td>").text(data[i].order_item.toString());
+      var col_vendor = $("<td></td>").text(data[i].order_vendor.toString());
+      var url = data[i].order_item_url.toString();
+      var col_order_url = $("<td style=\"overflow:hidden;white-space:nowrap\"><a target="+"_blank"+" href="+url+">"+"URL"+"</a></td>");
+      var col_quantity = $("<td></td>").text(data[i].order_quantity.toString());      
+      var col_currency = $("<td></td>").text(data[i].order_currency.toString()); 
+      var col_price = $("<td></td>").text(data[i].order_currency.toString()+data[i].order_unit_price.toString());
+      var col_status =   $('<td class=\"row-order-status-name\"></td>').text(data[i].order_status.name.toString());
+      var row = $("<tr></tr>").append(col_id,col_date,col_disp_date,col_category,col_order,col_vendor,col_order_url,col_quantity,
+                                      col_price,col_status);
+      tbody = tbody.append(row);
+    }
+    
+      // $('tr').sort(function(a,b){
+      //    return new Date($(a).find('col_date').val()).getTime() < new Date($(b).find('input').val()).getTime() 
+      // }).appendTo(tbody)
 
-  //     var image_link =  $("<a id=\"image_view\" class=\"thumbnail\"></a>")
-  //     //var photo = $("<img class=\"img-responsive\">").text(data[i].photo);   
-      
-  //     var DOM_img = document.createElement("img");
-  //     DOM_img.src = data[i].photo.toString();
-  //     DOM_img.height = "150";
-  //     DOM_img.width = "250";
-  //     DOM_img.class = "img-responsive";
-  //     var image = image_link.append(DOM_img)
-  //     var desc = $("<h5></h5>").text(data[i].description.toString());
-  //     //var col_status = $("<td class=\"row-order-status-id\" style=\"display:none;\"></td>").text(data[i].order_status.status_id.toString());
-  //     //var col_status_butn =   $('<td><button class=" btn btn-primary show_status" data-title="Status" data-toggle="modal">Track</button></td>');
-  //     //var col_edit_butn = $('<td><button class=" btn btn-primary btn-xs update_order" data-title="Edit" data-toggle="modal"><i class="fa fa-pencil fa-lg"></i></button></td>');
-  //     //var col_del_butn = $('<td><button  class="btn btn-danger btn-xs delete_order" data-title="Delete" data-toggle="modal"><i class="fa fa-trash fa-lg"></i></button></td>');
-
-  //     var row = $("<div class=\"col-sm-6 col-md-3\"></div>").append(image_id,image,desc);
-
-  //     maindiv = maindiv.append(row);
-  //   }
-  //   $('#pop_image').html(maindiv.html()); 
-  //   $('#image_view').on('click',function(){
-  //         alert('in here');
-  //         var image_id = parseInt($(this).closest('div').find('.row-image-id').text());
-  //         $.ajax({
-  //           url:'/api/prototypes/' + image_id,
-  //           success: function(data) {
-  //             alert(data);
-  //             $('#photo_id').val(data.id);
-  //             $("#photo_view").val(data.photo.url);    
-  //             $("#photo_title").val(data.pname);    
-  //             $("#photo_description").val(data.description);    
-  //             $("#photo_upload_on").val(data.uploaded_on);        
-  //             $("#imagemodal").modal("show");         
-  //           }
-  //         })
-  //     });
-  // }
- 
+    $('#viewTableBody').html(tbody.html());
+   
+    $('#viewTable').DataTable({
+        bJQueryUI: true,        
+        dom: 'Bfrtip',
+        buttons: [
+              'copy', 'excel', 'pdf', 'print'
+          ],
+        order: [[1,'desc']]
+    });
+   
+    
+  }

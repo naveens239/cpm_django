@@ -44,8 +44,11 @@
 {% block jumbotron %}
 <div class="jumbotron">
 <div class="container">
+<div class="btn-toolbar">
+<a type = "button "class="btn btn-default pull-right" href="{% url 'netproject' %}"> View All Projects</a>
 
-<a type = "button "class="btn btn-default pull-right"href="{% url 'addproject' %}"> <i class= "fa fa-plus-circle"></i> New Project</a>
+<a type = "button "class="btn btn-default pull-right" href="{% url 'addproject' %}"> <i class= "fa fa-plus-circle"></i> New Project</a>
+</div>
 
 <div class="row">
 

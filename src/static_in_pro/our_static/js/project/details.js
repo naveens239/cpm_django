@@ -1,4 +1,5 @@
 
+
 // // refresh chart with new data
 	function refresh_task_chart(data) {
 		var xAxisData = []
@@ -111,7 +112,7 @@
               for (var i = 0; i < data.length; i++) {
                 var col_id = $("<h5 class=\"row-ele-id\" style=\"display:none;\"></h5>").text(data[i].id.toString());
                 var sdate = new Date(data[i].commented_on);
-                var start_date_str = '' + (sdate.getMonth()+1) + '/' + sdate.getDate() + '/' + sdate.getFullYear() + ' '+ sdate.getHours()+':'+sdate.getMinutes();
+                var start_date_str = '' + sdate.getDate() + '/' + (sdate.getMonth()+1) + '/' + sdate.getFullYear() + ' '+ sdate.getHours()+':'+sdate.getMinutes();
                 var col_commented_on = $("<b style=\"color:grey;\"></b>").text(start_date_str);
                 var filler_1 = $("<span></span>").text(" by ");
                 var col_author = $("<span style=\"color:rgb(55, 138, 231);\"></span>").text(data[i].author.toString());
@@ -202,85 +203,73 @@
 
     var tbody = $("<tbody></tbody>")
     console.log('inside order table itself');
+    console.log(data);
+    
     for (var i = 0; i < data.length; i++) {
       //var col_id = $("<td class=\"row-order-id\" style=\"display:none;\"></td>").text(data[i].id.toString());
       var col_id = $("<td class=\"row-order-id\" style=\"display:none;\"></td>").text(data[i].id.toString());
-      var col_category = $("<td></td>").text(data[i].order_category.toString());
-      var col_sub_category = $("<td></td>").text(data[i].order_sub_category.toString());
-      var col_order = $("<td style=\"overflow:hidden;white-space:nowrap\"></td>").text(data[i].order_item.toString());
+      var col_date = $("<td  style=\"display:none;\"></td>").text(data[i].added_on.toString());
+      var sdate = new Date(data[i].added_on);
+      var hours = sdate.getHours();
+      var mins = sdate.getMinutes();
+      //var ampm = hours >= 12 ? 'pm' : 'am';
+      var year=new Date().getFullYear()+'';
+      year= year.match(/\d{2}$/)
+      var author = data[i].author.toString();
+      var start_date_str = '' + sdate.getDate() + '/' + (sdate.getMonth()+1) + '/' + year + ' '+ hours+':'+mins+" "+author;
+      var col_disp_date = $("<td style=\"font-size:15px\"></td>").text(start_date_str);
+      var col_category = $("<td style=\"font-size:15px\"></td>").text(data[i].order_category.toString()+"- "+data[i].order_sub_category.toString());
+      var col_sub_category = $("<td style=\"font-size:15px\"></td>").text(data[i].order_sub_category.toString());
+      var col_order = $("<td style=\"overflow:hidden;white-space:nowrap;font-size:15px\"></td>").text(data[i].order_item.toString());
       var col_vendor = $("<td></td>").text(data[i].order_vendor.toString());
       //var col_order_url = $("<td style=\"overflow:hidden;white-space:nowrap\"></td>").text(data[i].order_item_url.toString());
       var url = data[i].order_item_url.toString();
       //var col_order_url = $("<td><a href="+url+">Link</a></td>");
-      var col_order_url = $("<td style=\"overflow:hidden;white-space:nowrap\"><a href="+url+">"+data[i].order_item_url.toString()+"</a></td>");
+
+      var col_order_url = $("<td style=\"overflow:hidden;white-space:nowrap\"><a target="+"_blank"+" href="+url+">"+"URL"+"</a></td>");
       //console.log(url);
       var col_quantity = $("<td></td>").text(data[i].order_quantity.toString());      
       var col_currency = $("<td></td>").text(data[i].order_currency.toString()); 
       var col_price = $("<td></td>").text(data[i].order_currency.toString()+data[i].order_unit_price.toString());
+      var col_ELT =  $("<td></td>").text(data[i].est_lead_time.toString()); 
       //var col_status = $("<td class=\"row-order-status-id\" style=\"display:none;\"></td>").text(data[i].order_status.status_id.toString());
       //var col_status = $("<td class=\"row-order-status-id\"></td>").text(data[i].order_status.status_id.toString());
       //var col_status_butn =   $('<td><button class=" btn btn-primary show_status" data-title="Status" data-toggle="modal">Track</button></td>');
       var col_status_butn =   $('<td class=\"row-order-status-name\"></td>').text(data[i].order_status.name.toString());
-      var col_commnt_butn = $('<td><button class=" btn btn-primary btn-xs comment_order" data-title="Comment" data-toggle="modal"><i class="fa fa-comment fa-lg"></i></button></td>');
-      var col_edit_butn = $('<td><button class=" btn btn-primary btn-xs update_order" data-title="Edit" data-toggle="modal"><i class="fa fa-pencil fa-lg"></i></button></td>');
-      var col_del_butn = $('<td><button  class="btn btn-danger btn-xs delete_order" data-title="Delete" data-toggle="modal"><i class="fa fa-trash fa-lg"></i></button></td>');
+      //var col_commnt_butn = $('<td><button class=" btn btn-primary btn-xs comment_order" data-title="Comment" data-toggle="modal"><i class="fa fa-comment fa-lg"></i></button></td>');
+      var col_track_btn =  $('<td><button class=" btn btn-primary track_courier" data-title="Track" data-toggle="modal">Track</button></td>');
+      var col_edit_butn = $('<td><button class=" btn btn-primary btn-xs update_order" data-title="Edit" data-toggle="modal"><i class="fa fa-pencil fa-lg"></i></button>&nbsp;<button  class="btn btn-danger btn-xs delete_order" data-title="Delete" data-toggle="modal"><i class="fa fa-trash fa-lg"></i></button>&nbsp;<button class=" btn btn-primary btn-xs comment_order" data-title="Comment" data-toggle="modal"><i class="fa fa-comment fa-lg"></i></button></td>');
+      //var col_del_butn = $('<td><button  class="btn btn-danger btn-xs delete_order" data-title="Delete" data-toggle="modal"><i class="fa fa-trash fa-lg"></i></button></td>');
 
       //var row = $("<tr></tr>").append(col_id,col_category,col_sub_category,col_order,col_vendor,col_order_url,col_quantity,col_currency,
       //                                col_price,col_status,col_status_butn,col_commnt_butn,col_edit_butn,col_del_butn);
-      var row = $("<tr></tr>").append(col_id,col_category,col_sub_category,col_order,col_vendor,col_order_url,col_quantity,
-                                      col_price,col_status_butn,col_commnt_butn,col_edit_butn,col_del_butn);
-
+      //var row = $("<tr></tr>").append(col_id,col_category,col_sub_category,col_order,col_vendor,col_order_url,col_quantity,
+      //                                col_price,col_status_butn,col_commnt_butn,col_edit_butn,col_del_butn);
+      //var row = $("<tr></tr>").append(col_id,col_date,col_disp_date,col_category,col_sub_category,col_order,col_vendor,col_order_url,col_quantity,
+      //                                col_price,col_status_butn,col_track_btn,col_edit_butn);
+      var row = $("<tr></tr>").append(col_id,col_date,col_disp_date,col_category,col_order,col_vendor,col_order_url,col_quantity,
+                                      col_price,col_ELT,col_status_butn,col_track_btn,col_edit_butn);
       tbody = tbody.append(row);
-       
     }
-
     
+      // $('tr').sort(function(a,b){
+      //    return new Date($(a).find('col_date').val()).getTime() < new Date($(b).find('input').val()).getTime() 
+      // }).appendTo(tbody)
 
     $('#orderTableBody').html(tbody.html());
-    // $('#orderTable').DataTable({
-    //      bJQueryUI: true,
-    //     "columns": [
-    //       { bVisible : false }, // assume this is the id of the row, so don't show it
-    //       { bVisible : true },
-    //       { bVisible : true },
-    //       { bVisible : true },
-    //       { bVisible : true },
-    //       { bVisible : true },
-    //       { bVisible : true },
-    //       { bVisible : true },
-    //       { bVisible : true },
-    //       { bVisible : false }, 
-
-    //       /* COMMENT */ {
-    //           mRender: function (data, type, row) {
-    //               return '<button class=" btn btn-primary btn-xs comment_order" data-title="Comment" data-toggle="modal" data-id="' + row.id + '"><i class="fa fa-comment fa-lg"></i>COMMENT</button>'
-    //           }
-    //       },
-    //       /* EDIT */ {
-    //           mRender: function (data, type, row) {
-    //               return '<button class=" btn btn-primary btn-xs update_order" data-id="' + row[0] + '">EDIT</a>'
-    //           }
-    //       },
-    //       /* DELETE */ {
-    //           mRender: function (data, type, row) {
-    //               return '<a class="btn btn-danger btn-xs delete_order" data-id="' + row[0] + '">DELETE</a>'
-    //           }
-    //       }              
-    //     ]
-        
-        
-    // });
+   
     $('#orderTable').DataTable({
-        bJQueryUI: true,
+        bJQueryUI: true,        
         dom: 'Bfrtip',
         buttons: [
               'copy', 'excel', 'pdf', 'print'
-          ]
+          ],
+        order: [[1,'desc']]
     });
-    
-
-
-    $('button.delete_order').on('click',function(){
+   
+    // to enhance order delete on all pages.
+     $('#orderTable').on('click','button.delete_order',function(){
+    // $('button.delete_order').on('click',function(){
           var status = $(this).closest('tr').find('.row-order-status-name').text();
           console.log(status);
           //if ($(this).closest('tr').find('.row-order-status-id').text() > 100)
@@ -293,7 +282,15 @@
             //$("#delete-modal-ele-status-id").val($(this).closest('tr').find('.row-order-status-id').text());
 
         });
-     $('button.comment_order').on('click',function(){
+     $('#orderTable').on('click','button.track_courier',function(){
+          $("#order-track-modal-header-ele-id").val($(this).closest('tr').find('.row-order-id').text());
+          var order_id = parseInt($(this).closest('tr').find('.row-order-id').text());
+          console.log(order_id);
+          console.log('tracking.....');
+          $("#trackOrderModal").modal("show");
+     });
+     $('#orderTable').on('click','button.comment_order',function(){
+     //$('button.comment_order').on('click',function(){
           
             $("#order-comment-modal-header-ele-id").val($(this).closest('tr').find('.row-order-id').text());
             var order_id = parseInt($(this).closest('tr').find('.row-order-id').text());
@@ -309,7 +306,7 @@
               for (var i = 0; i < data.length; i++) {
                 var col_id = $("<h5 class=\"row-ele-id\" style=\"display:none;\"></h5>").text(data[i].id.toString());
                 var sdate = new Date(data[i].commented_on);
-                var start_date_str = '' + (sdate.getMonth()+1) + '/' + sdate.getDate() + '/' + sdate.getFullYear() + ' '+ sdate.getHours()+':'+sdate.getMinutes();
+                var start_date_str = '' + sdate.getDate() + '/' + (sdate.getMonth()+1) + '/' + sdate.getFullYear() + ' '+ sdate.getHours()+':'+sdate.getMinutes();
                 var col_commented_on = $("<b style=\"color:grey;\"></b>").text(start_date_str);
                 var filler_1 = $("<span></span>").text(" by ");
                 var col_author = $("<span style=\"color:rgb(55, 138, 231);\"></span>").text(data[i].author.toString());
@@ -331,7 +328,8 @@
       });
            $("#commentOrderModal").modal("show");
       });
-    $('button.show_status').on('click',function(){
+    $('#orderTable').on('click','button.show_status',function(){ 
+    //$('button.show_status').on('click',function(){
            // var all_order_status = "{{ order_status_data}}";
            // alert(all_order_status);
           // for (i = 0; i < all_order_status.length; i++) {
@@ -378,7 +376,8 @@
               }
           })
         });
-    $('button.update_order').on('click',function(){
+    $('#orderTable').on('click','button.update_order',function(){
+    //$('button.update_order').on('click',function(){
           var order_id = parseInt($(this).closest('tr').find('.row-order-id').text());
           //var status = parseInt($(this).closest('tr').find('.row-status-id').text());
           $.ajax({
@@ -393,12 +392,18 @@
               $("#edit-modal-ele-currency").val(data.order_currency); 
               $("#edit-modal-ele-price").val(data.order_unit_price); 
               $("#edit-modal-ele-vendor").val(data.order_vendor); 
-              $("#edit-modal-ele-url").val(data.order_item_url);  
+              $("#edit-modal-ele-url").val(data.order_item_url);
+              // var elt = data.est_lead_time;
+              // var est_lead_num = elt.slice(0,1);
+              // var est_lead_day = elt.slice(1,2);
+
+              // $("#edit-modal-ele-num").val(est_lead_num);
+              // $("#edit-modal-ele-day").val(est_lead_day);   
               //if (data.order_status.status_id > 100)
               if (data.order_status.name === "Not Placed")
                  $("#editOrderModal").modal("show");
               else 
-                 $("#editErrorOrderModal").modal("show"); editErrorOrderModal
+                 $("#editErrorOrderModal").modal("show");
             }
           })
       });
@@ -411,14 +416,14 @@
       data: {
         'project_id':project_id,
       },
-      success: function(data) {
+
+      success: function(data) {  
         g_order_data = data;
         refresh_order_table(data);
       }
     });     
   }
-  refresh_order();
-
+     refresh_order();
 
   $('button.delete_image').on('click',function(){
      var imageId = $(this).data('id'); 
@@ -426,4 +431,4 @@
      $("#delete-modal-header-ele-image-id").val($(this).data('id'));
      
    });
-
+  

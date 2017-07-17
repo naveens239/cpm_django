@@ -26,6 +26,7 @@ urlpatterns = [
     url(r'^about/$', cpm.views.about, name='about'),
     url(r'^profile/$', cpm.views.profile, name='profile'),
     url(r'^addproject/$', cpm.views.addproject, name='addproject'),
+    url(r'^netproject/$', cpm.views.netproject, name='netproject'),
     url(r'^projectoverview/(?P<name>.*)/$', cpm.views.projectoverview, name='projectoverview'),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^accounts/', include('registration.backends.default.urls')),

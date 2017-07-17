@@ -24,7 +24,7 @@ SECRET_KEY = 'mn&&xbd$#&_6s##tggx978m2^fn8k5w#s8_4%fue^g=yft^=x$'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['ndave.pythonanywhere.com']
+ALLOWED_HOSTS = []
 
 EMAIL_USE_TLS = True 
 EMAIL_USE_SSL = False
@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'cpm',
     'rest_framework',
     'api',
+    'floppyforms',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -123,7 +124,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kolkata'
 
 USE_I18N = True
 

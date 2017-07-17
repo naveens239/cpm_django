@@ -24,14 +24,14 @@
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
             {% if not request.user.is_authenticated %}
-            <li><a href="{% url 'home' %}">Home</a></li>
-            <li><a href="{% url 'about' %}">About</a></li>
-            <li><a href="{% url 'contact' %}">Contact</a></li>
+            <!-- <li><a href="{% url 'home' %}">Home</a></li> -->
+            <!-- <li><a href="{% url 'about' %}">About</a></li> -->
+            <!-- <li><a href="{% url 'contact' %}">Contact</a></li> -->
 
             {% else %}
             <li><a href="{% url 'profile' %}">Dashboard</a></li>
-            <li><a href="{% url 'about' %}">About</a></li>
-            <li><a href="{% url 'contact' %}">Contact</a></li>
+            <!-- <li><a href="{% url 'about' %}">About</a></li> -->
+            <!-- <li><a href="{% url 'contact' %}">Contact</a></li> -->
             {% endif %}
             <!-- <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
@@ -51,9 +51,9 @@
           {% if request.user.is_authenticated %}
             <p class="navbar-text">Welcome, {{request.user}}</p> 
             <li><a href="{% url 'auth_logout'%}">Logout</a></li>
-            <!-- {% else %}
+            <!-- {% else %} 
             <!-- <li><a href="{% url 'registration_register'%}">Register</a></li> -->
-            {% endif %}
+          {% endif %}
           </ul>
           {% if not request.user.is_authenticated and not "accounts/login" in request.get_full_path %}
           <form class='navbar-form navbar-right' method='POST' action='{% url "auth_login"%}'>{% csrf_token%}

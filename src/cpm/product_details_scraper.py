@@ -5,10 +5,10 @@ import urllib
 from exceptions import ValueError
 from time import sleep
 from urlparse import urlparse
-from bs4 import BeautifulSoup
-from selenium import webdriver
+#from bs4 import BeautifulSoup
+#from selenium import webdriver
 from pprint import pprint
- 
+
 def AmazonParser(url):
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.2; WOW64; rv:52.0) Gecko/20100101 Firefox/52.0'}
     page = requests.get(url,headers=headers)
@@ -54,8 +54,12 @@ def AmazonParser(url):
             match = re.search(r'([\D]+)([\d,.]+)', ORIGINAL_PRICE)
             output = (match.group(1), match.group(2).replace(',',''))
             print 'output is',output[1]
-            ORIGINAL_PRICE = output[1]
+            #ORIGINAL_PRICE = output[1]
             CURRENCY = output[0]
+            ORIGINAL_PRICE = output[1]
+            if CURRENCY =='.':
+                CURRENCY = "Rs"
+            print CURRENCY
             data = {
                     'ITEM':NAME,
                     'SALE_PRICE':SALE_PRICE,
@@ -256,7 +260,7 @@ def AliParser(url):
             print e
 def DxParser(url):
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.2; WOW64; rv:52.0) Gecko/20100101 Firefox/52.0'}
-    page = requests.get(url,headers=headers)
+    page = requests.get(url,headers=headers, timeout=5)
     while True:
         sleep(3)
         try:
