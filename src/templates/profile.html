@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load staticfiles %}
+
 <style>
  {% block style %}
 .jumbotron{
@@ -45,9 +46,11 @@
 <div class="jumbotron">
 <div class="container">
 <div class="btn-toolbar">
-<a type = "button "class="btn btn-default pull-right" href="{% url 'netproject' %}"> View All Projects</a>
+<a type = "button" class="btn btn-default pull-right" data-toggle="modal" data-target="#register_listing"> Register Listing</a>
+<a type = "button" class="btn btn-default pull-right" href = "{% url 'register_vendor' %}"> Register Vendor</a>
+<a type = "button" class="btn btn-default pull-right" href="{% url 'netproject' %}"> View Inventory</a>
 
-<a type = "button "class="btn btn-default pull-right" href="{% url 'addproject' %}"> <i class= "fa fa-plus-circle"></i> New Project</a>
+<a type = "button" class="btn btn-default pull-right" href="{% url 'addproject' %}"> <i class= "fa fa-plus-circle"></i> New Project</a>
 </div>
 
 <div class="row">
@@ -55,6 +58,8 @@
 <div class='col-sm-12'>
 <h2 class="text-align-center">Dashboard</h2>	<div class='row'>
     <h4 class="text-align-center">{{message}}</h4>
+    <h4 class="text-align-center">{{listing_message}}</h4>
+    
 	{%for project in form %}
 	    
 		<div class='col-md-3'>
@@ -108,5 +113,6 @@
 
 </div>
 </div>
+{% include "register_listing.html" %}
 </div>
 {% endblock %}

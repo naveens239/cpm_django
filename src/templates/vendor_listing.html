@@ -1,0 +1,113 @@
+{% load crispy_forms_tags%}
+<div class="modal fade" id="vendor_listing" tabindex="-1" role="dialog" aria-labelledby="edit" aria-hidden="true">
+    <div class="modal-dialog">
+       <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true"> <i class="fa fa-times-circle fa-lg"></i></button>
+            <h4 class="modal-title custom_align text-align-center" id="Heading">Vendor Listing</h4>
+          </div>
+          <div class="modal-body">
+           <form  id="vendor_form" class="form"  method='POST' action="" style="width: 50%;margin-left: 25%" enctype="multipart/form-data">
+           {% csrf_token %}
+            {{ vendor_listing_form|crispy }}
+               <!-- {% for mat in order_listing_form %}
+                     <div class="col-sm-9">
+                       <div style="font-size: 15px;">{{ mat.label_tag }}</div> {{ mat }}<br>
+                    </div>
+                {% endfor %} -->
+            <input type="submit" name = "vendor_listing" style="width: 50%;margin-left: 25%" class="btn btn-success" value="Save">
+            </form>
+          </div>
+          <div class="modal-footer ">
+          </div>
+        </div>
+    <!-- /.modal-content --> 
+    </div>
+      <!-- /.modal-dialog --> 
+</div>
+
+<div class="modal fade" id="deleteVendorModal" tabindex="-1" role="dialog" aria-labelledby="edit" aria-hidden="true">
+    <div class="modal-dialog">
+       <div class="modal-content">
+          <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true"> <i class="fa fa-times-circle fa-lg"></i></button>
+          <h4 class="modal-title custom_align text-align-center" style="width: 50%;margin-left: 25%" id="Heading">Delete Vendor</h4>
+          </div>
+          <div class="modal-body">
+           <form  class="form"  method='POST' action="" style="width: 50%;margin-left: 25%" enctype="application/x-www-form-urlencoded">{% csrf_token %}
+              <div class="alert alert-danger"><i class="fa fa-exclamation-triangle fa-lg"></i>Are you sure you want to delete this Vendor?</div>
+               <div class="form-group">
+         
+           <input type='hidden' class="form-control required"  name = 'model_instance' id="delete-vendor-id" />
+            </div> 
+           <!-- <input type="submit" name = "edit" class="btn btn-warning btn-lg" style="width: 100%;" value="Update"> -->
+            <input type="submit" name = "vendor_delete" class="btn btn-success" value="Yes">
+              <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+          </form>
+          </div>
+          <div class="modal-footer ">
+     <!--      <button type="submit" class="btn btn-success" > Yes</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">No</button> -->
+          </div>
+        </div>
+    <!-- /.modal-content --> 
+    </div>
+      <!-- /.modal-dialog --> 
+</div>
+
+  <div class="modal fade" id="editVendorModal" tabindex="-1" role="dialog" aria-labelledby="edit" aria-hidden="true">
+     <div class="modal-dialog">
+     <div class="modal-content">
+       <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+              <i class="fa fa-times-circle fa-lg"></i></button>
+              <h4 class="modal-title custom_align" id="Heading" style="width: 50%;margin-left: 25%">Edit Vendor Detail <!-- - <span id="edit-model-header-ele-id">1</span> --></h4>
+        </div>
+            <div class="modal-body">
+             <form  class="form"  method='POST' action="" style="width: 50%;margin-left: 25%" enctype="application/x-www-form-urlencoded">{% csrf_token %}
+
+           <div class="form-group">
+                <h5>Vendor Name</h5>
+               <input id="edit-vendor-name" class="form-control" name="vendor_name" type="text" > 
+             </div>
+             <div class="form-group">
+                <h5>GSTIN</h5>
+               <input id="edit-vendor-GSTIN" class="form-control" name="GSTIN" type="text" > 
+             </div>
+              <div class="form-group">
+                <h5>Address</h5>
+               <input id="edit-vendor-address" class="form-control" name="address" type="text" >  
+             </div>
+             <div class="form-group">
+                <h5>Contact Person</h5>
+               <input id="edit-contact-person" class="form-control" name="contact-person" type="text"> 
+             </div>
+             <div class="form-group">
+                <h5>Phone</h5>
+               <input id="edit-contact-num" class="form-control" name="contact_num" type="number" min="0">  
+             </div>
+             <div class="form-group">
+                <h5>Website</h5>
+               <input id="edit-vendor-website" class="form-control" name="website" type="text"> 
+             </div>
+                        
+            <div class="form-group">
+           
+             <input type='hidden' class="form-control required"  name = 'model_instance' id="edit-vendor-id" />
+             
+             
+              </div> 
+             <input id="edit-vendor-modal-submit" type="submit" name = "vendor_edit" class="btn btn-warning btn-lg" style="width: 50%;margin-left: 25%" value="Update">
+
+            </form>
+              
+            </div>
+          
+            <div class="modal-footer ">
+               <!-- <button type="button" name=edit class="btn btn-warning btn-lg" style="width: 100%;">Update</button> -->
+           </div>
+        </div>
+      <!-- /.modal-content --> 
+      </div>
+        <!-- /.modal-dialog --> 
+  </div>

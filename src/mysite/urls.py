@@ -32,6 +32,10 @@ urlpatterns = [
     url(r'^accounts/', include('registration.backends.default.urls')),
     url(r'^projectsettings/(?P<name>.*)/$', cpm.views.projectsettings, name='projectsettings'),
     url(r'^projectdetails/(?P<name>.*)/$', cpm.views.projectdetails, name='projectdetails'),
+    url(r'^get_category/$', cpm.views.get_category, name='get_category'),
+    url(r'^get_sub_category/(?P<category>.*)/$', cpm.views.get_sub_category, name='get_sub_category'),
+    url(r'^get_vendors/$', cpm.views.get_vendors, name='get_vendors'),
+    url(r'^register_vendor/$', cpm.views.register_vendor,name='register_vendor'),
     url(r'^api/', include('api.urls')),
 ]+static(settings.STATIC_URL, document_root = settings.STATIC_ROOT)
 

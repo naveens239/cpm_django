@@ -107,6 +107,21 @@ class ScheduleComment(models.Model):
 	commented_on = models.DateTimeField(auto_now_add = False, auto_now = True)
 	comment = models.CharField(max_length=2000,blank=False)
 
+class CategoryList(models.Model):
+	category = models.CharField(max_length=200,blank=True)
+	sub_category = models.CharField(max_length=200,blank=True)
+	def __unicode__(self):
+		return str(self.category)
+
+class VendorList(models.Model):
+    vendor_name = models.CharField(max_length=200,blank=True)
+    GSTIN = models.CharField(max_length=200,blank=True,null=True)
+    address = models.CharField(max_length=200,blank=True,null=True)
+    contact_person = models.CharField(max_length=200,blank=True,null=True)
+    contact_num = models.IntegerField(blank=True,null=True)
+    website = models.URLField(blank=True,null=True)
+
+
 class Courier(models.Model):
 	name = models.CharField(max_length=200,blank=True)
 	slug = models.CharField(max_length=200,blank=True)

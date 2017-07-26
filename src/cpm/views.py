@@ -1,12 +1,13 @@
 from django.shortcuts import render, render_to_response,redirect
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
-from .forms import ContactForm, SignUpForm,AddNewProjectForm,ProjectStageForm,TeamAddForm,TeamEditForm, TrackingForm
-from .forms import ProjectPlanForm,ScheduleForm,ScheduleEditForm, MaterialForm, PrototypeForm, ScheduleCommentForm, MaterialCommentForm, ProcessURLForm,ExcelForm
+from django.core import serializers
+from .forms import ContactForm, SignUpForm,AddNewProjectForm,ProjectStageForm,TeamAddForm,TeamEditForm, OrderListingForm, TrackingForm
+from .forms import ProjectPlanForm,ScheduleForm,ScheduleEditForm, MaterialForm, PrototypeForm, ScheduleCommentForm, VendorListingForm,MaterialCommentForm, ProcessURLForm,ExcelForm
 from django.core.mail import send_mail
 from django.conf import settings
 from .models import Project, Stage, StageSetting, Team, Role,Plan, Schedule, Material, OrderStatus, Prototype, ScheduleComment, MaterialComment
-from .models import TrackingInfo, Courier
+from .models import TrackingInfo, Courier, CategoryList, VendorList
 from product_details_scraper import ReadAsin
 import json, ast, datetime,re
 import openpyxl
@@ -86,11 +87,172 @@ def about(request):
 
 def profile(request):
     project_data = Project.objects.all()
+    order_listing_form = OrderListingForm(request.POST or None)
+    listing_message=""
+    
+    if request.method=='POST' and 'register_listing' in request.POST:
+      print 'in order listing'
+      print request.POST
+      try:
+          if order_listing_form.is_valid():
+              print 'is valid'
+              category_choice =  order_listing_form.cleaned_data.get("category_choice")
+              if category_choice == "Others":
+                order_category = order_listing_form.cleaned_data.get("category")
+              else:
+                order_category = category_choice
+              sub_category_choice =  order_listing_form.cleaned_data.get("sub_category_choice")
+              if sub_category_choice == "Others":
+                order_sub_category = order_listing_form.cleaned_data.get("sub_category")
+              else:
+                order_sub_category = sub_category_choice
+
+             #print 'SUb is.....', order_sub_category
+
+              if (order_category != None and order_category !="" and order_category != "Others") and (order_sub_category != None and order_sub_category != "" and order_sub_category != "Others"):
+                #print 'order category is', order_category
+                #print 'orer sub is ', order_sub_category
+                category_data = CategoryList.objects.filter(category=order_category, sub_category=order_sub_category)
+                #print 'data', category_data
+                if not category_data:
+                    #print 'new cat data'
+                    category_data = CategoryList(category=order_category, sub_category= order_sub_category)
+                    category_data.save()
+                    listing_message= "Category Saved Successfully"
+                    category_data = CategoryList()
+                elif not CategoryList.objects.filter(category=order_category, sub_category=order_sub_category).exists():
+                    #print 'cat data 2'
+                    category_data = CategoryList(category=order_category, sub_category= order_sub_category)
+                    category_data.save()
+                    category_data = CategoryList()
+                    listing_message= "Category Saved Successfully"
+                else:
+                    #print 'cat condition 3'
+                    listing_message= "Category pair already exists"
+             
+              else:
+                 #print 'errrrors'
+                 #print 'nothing',order_listing_form.errors
+                 listing_message = "Category/ Sub category can't be empty.Please provide valid entry"
+          else:
+            if (request.POST.get('category_choice')=="Others" and request.POST.get('category') == "") or (request.POST.get('sub_category_choice')=="Others" and request.POST.get('sub_category') == ""):
+               listing_message = "Category/ Sub category can't be empty.Please provide valid entry"
+            print order_listing_form.errors
+      except Exception as e:
+          print str(e)  
+    order_listing_form = OrderListingForm()
     context={
-            "form":project_data
+            "form":project_data,
+            "order_listing_form":order_listing_form,
+            "listing_message":listing_message,
         }
 
     return render(request, "profile.html",context)    
+
+def get_vendors(request):
+    print 'in here sub category filtering'
+    ven_data = VendorList.objects.all().values_list("vendor_name","vendor_name").distinct()
+    print 'ven dat is ', ven_data
+    cat=[]
+    for sc in ven_data:
+       cat.append(sc[0])
+    print cat
+    return HttpResponse(json.dumps(cat), content_type="application/json")
+def get_category(request):
+    print 'in here sub category filtering'
+    cat_data = CategoryList.objects.all().values_list("category","category").distinct()
+    print 'cat dat is ', cat_data
+    cat=[]
+    for sc in cat_data:
+       cat.append(sc[0])
+    print cat
+    return HttpResponse(json.dumps(cat), content_type="application/json")
+def get_sub_category(request,category):
+    print 'in here sub category filtering',category
+    cat_data = CategoryList.objects.filter(category=category)
+    print 'cat dat is ', cat_data
+    sub_cat=[]
+    for sc in cat_data:
+       sub_cat.append(sc.sub_category)
+    print sub_cat
+    #form = OrderListingForm(request.POST)
+    #form.fields['sub_category_choice'].choices = [(sub_cat,sub_cat)]
+    return HttpResponse(json.dumps(sub_cat), content_type="application/json")
+    #return HttpResponse(request,form)
+def register_vendor(request):
+    vendor_listing_form = VendorListingForm(request.POST or None)
+    message = ""
+    if request.method=='POST' and 'vendor_listing' in request.POST:
+      print 'in vendor', request.POST
+      if vendor_listing_form.is_valid():
+         vendor_name = vendor_listing_form.cleaned_data.get("vendor_name")
+         GSTIN = vendor_listing_form.cleaned_data.get("GSTIN")
+         address = vendor_listing_form.cleaned_data.get("address")
+         contact_person = vendor_listing_form.cleaned_data.get("contact_person")
+         contact_num = vendor_listing_form.cleaned_data.get("contact_num")
+         website = vendor_listing_form.cleaned_data.get("website")
+         vendor_data = VendorList(vendor_name=vendor_name,address=address,GSTIN=GSTIN,contact_person=contact_person,contact_num=contact_num,website=website)
+         vendor_data.save()
+      else:
+         print vendor_listing_form.errors
+    vendor_data = VendorList.objects.all()
+    
+
+    if request.method=='POST' and 'vendor_delete' in request.POST:
+       id_ = request.POST.get('model_instance')
+       print'Name issss',id_
+       vendor_data = VendorList.objects.get(id=id_)
+       vendor_data.delete()
+       message = "Vendor Deleted Successfully"
+    
+    if request.method=='POST' and 'vendor_edit' in request.POST:
+      vendor_edit_form = VendorListingForm(request.POST or None)
+      if vendor_edit_form.is_valid():   
+            print request.POST
+            vendor_name = vendor_edit_form.cleaned_data.get('vendor_name')
+            address = vendor_edit_form.cleaned_data.get('address')
+            GSTIN = vendor_edit_form.cleaned_data.get('GSTIN')
+            contact_person = vendor_edit_form.cleaned_data.get('contact_person')
+            contact_num = vendor_edit_form.cleaned_data.get('contact_num')
+            website = vendor_edit_form.cleaned_data.get('website')
+            id_ = request.POST.get("model_instance")
+            print 'before try !!!!!!!', id_
+            try:
+              p = VendorList.objects.get(id=id_)
+              if vendor_name:
+                  p.vendor_name = vendor_name
+              if address:
+                  p.address = address
+              if GSTIN:
+                  p.GSTIN = GSTIN
+              if contact_person:
+                  p.contact_person = contact_person
+              if contact_num:
+                  p.contact_num = contact_num
+              if website:
+                  p.website = website
+
+              p.save()
+              message="Vendor details Updated Successfully"
+            except VendorList.DoesNotExist:
+               print 'in except'
+               p = VendorList(vendor_name=vendor_name,address=address,GSTIN=GSTIN,contact_num=contact_num,contact_person=contact_person,website=website)
+               p.save()
+               message="Vendor details Updated Successfully"
+      else:
+            print 'errror in herereeeee'
+            print request.method
+            message="Vendor Update Not Successful"
+            print 'something went wrong !!!!!!!!'   
+
+    context={
+      'vendor_data':vendor_data,
+      'vendor_listing_form':vendor_listing_form,
+      'vendor_message': message,
+    }
+
+    return render(request, "register_vendor.html",context)  
+  
 def addproject(request):
     #print request.POST
     title = 'Add New Project'
@@ -141,6 +303,7 @@ def netproject(request):
     }
     
     return render(request,"net_project_view.html",context)
+
 
 def projectoverview(request,name):
     print request.POST
@@ -565,6 +728,8 @@ def projectdetails(request,name):
             url = material_form.cleaned_data.get('order_item_url')
             id_ = request.POST.get("model_instance")
             status_id = request.POST.get('order_status')
+            est_lead_num = request.POST.get('est_lead_num')
+            est_lead_days = request.POST.get('est_lead_days')
 
             print 'status_id is ',status_id
             print 'model  is ',id_
@@ -588,8 +753,11 @@ def projectdetails(request,name):
                   p.order_item_url = url
                 if vendor:
                   p.order_vendor = vendor
+                if est_lead_num and est_lead_days:
+                  p.est_lead_time = str(est_lead_num)+str(est_lead_days)
 
-                p.save(update_fields=['order_item','order_category','order_sub_category','order_quantity','order_currency','order_unit_price','order_item_url','order_vendor'])
+
+                p.save(update_fields=['order_item','order_category','order_sub_category','order_quantity','order_currency','order_unit_price','order_item_url','order_vendor','est_lead_time'])
                 order_message="Order Updated Successfully"
             except Material.DoesNotExist:
                 print 'in exception blck'
@@ -597,7 +765,7 @@ def projectdetails(request,name):
                 p = Material(project_name=project_data,order_category=category,\
                           order_sub_category=sub_category,order_item=item,\
                           order_item_url=url,order_vendor = vendor,order_quantity=int(quantity),\
-                          order_currency = currency,order_unit_price=float(price), order_status=status)
+                          order_currency = currency,order_unit_price=float(price), order_status=status, est_lead_time=est_lead_time)
                 p.save()
                 order_message="Order Updated Successfully"
          else:

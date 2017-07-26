@@ -1,0 +1,27 @@
+{% load crispy_forms_tags%}
+<div class="modal fade" id="register_listing" tabindex="-1" role="dialog" aria-labelledby="edit" aria-hidden="true">
+    <div class="modal-dialog">
+       <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true"> <i class="fa fa-times-circle fa-lg"></i></button>
+            <h4 class="modal-title custom_align text-align-center" id="Heading">Register Listing</h4>
+          </div>
+          <div class="modal-body">
+           <form  id="listing_form" class="form"  method='POST' action="" style="width: 50%;margin-left: 25%" enctype="multipart/form-data">
+           {% csrf_token %}
+            {{ order_listing_form|crispy }}
+               <!-- {% for mat in order_listing_form %}
+                     <div class="col-sm-9">
+                       <div style="font-size: 15px;">{{ mat.label_tag }}</div> {{ mat }}<br>
+                    </div>
+                {% endfor %} -->
+            <input type="submit" name = "register_listing" style="width: 50%;margin-left: 25%" class="btn btn-success" value="Save">
+            </form>
+          </div>
+          <div class="modal-footer ">
+          </div>
+        </div>
+    <!-- /.modal-content --> 
+    </div>
+      <!-- /.modal-dialog --> 
+</div>

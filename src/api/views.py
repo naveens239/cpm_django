@@ -2,8 +2,8 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from cpm.models import Project, Schedule, Material, OrderStatus, Prototype, ScheduleComment, MaterialComment
-from api.serializer import ProjectSerializer, ScheduleSerializer, MaterialSerializer
+from cpm.models import Project, Schedule, Material, OrderStatus, Prototype, ScheduleComment, MaterialComment, VendorList
+from api.serializer import ProjectSerializer, ScheduleSerializer, MaterialSerializer, VendorListSerializer
 from api.serializer import StatusSerializer, PrototypeSerializer,ScheduleCommentSerializer, MaterialCommentSerializer
 
 @api_view(['GET'])
@@ -135,3 +135,27 @@ def order_comment_list(request, format=None):
         print 'comments are', comments
         serializer = MaterialCommentSerializer(comments, many=True)
         return Response(serializer.data)
+
+@api_view(['GET'])
+def vendor_list(request, format=None):
+     if request.method == 'GET':
+        vendors = VendorList.objects.all()
+        serializer = VendorListSerializer(vendors, many=True)
+        return Response(serializer.data)
+
+@api_view(['GET','PUT'])
+def vendor_details(request, pk):
+    try:
+        s = VendorList.objects.get(pk=pk)
+    except VendorList.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = VendorListSerializer(s)
+        return Response(serializer.data)
+    elif request.method == 'PUT':
+        serializer = VendorListSerializer(s,data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

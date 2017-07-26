@@ -3,7 +3,7 @@ from django.contrib import admin
 # Register your models here.
 from .forms import SignUpForm, AddNewProjectForm
 from .models import SignUp, Project, Stage, StageSetting, Role, Team, Plan, Schedule,Material, OrderStatus,Prototype
-from .models import MaterialComment, ScheduleComment, Courier, TrackingInfo
+from .models import MaterialComment, ScheduleComment, Courier, TrackingInfo, CategoryList, VendorList
 
 
 class SignUpAdmin(admin.ModelAdmin):
@@ -64,6 +64,14 @@ class ScheduleCommentAdmin(admin.ModelAdmin):
    list_display = ["schedule","author","commented_on","comment"]
 admin.site.register(ScheduleComment,ScheduleCommentAdmin)
 
+class CategoryListAdmin(admin.ModelAdmin):
+   list_display = ["category","sub_category"]
+admin.site.register(CategoryList,CategoryListAdmin)
+
+class VendorListAdmin(admin.ModelAdmin):
+   list_display = ["vendor_name","GSTIN","address","contact_person","contact_num","website"]
+admin.site.register(VendorList,VendorListAdmin)
+
 class CourierAdmin(admin.ModelAdmin):
    list_display = ["name","slug"]
 admin.site.register(Courier, CourierAdmin)
@@ -71,3 +79,4 @@ admin.site.register(Courier, CourierAdmin)
 class TrackingInfoAdmin(admin.ModelAdmin):
    list_display = ["tracking_no","courier_id","added_on","material"]
 admin.site.register(TrackingInfo, TrackingInfoAdmin)
+

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from cpm.models import Project, Schedule, Material, OrderStatus, Prototype, ScheduleComment, MaterialComment
+from cpm.models import Project, Schedule, Material, OrderStatus, Prototype, ScheduleComment, MaterialComment, VendorList
 
 class ProjectSerializer(serializers.ModelSerializer):
 	class Meta:
@@ -37,4 +37,9 @@ class ScheduleCommentSerializer(serializers.ModelSerializer):
 class MaterialCommentSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = MaterialComment
+		fields='__all__'
+
+class VendorListSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = VendorList
 		fields='__all__'

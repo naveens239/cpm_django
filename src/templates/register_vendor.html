@@ -47,36 +47,30 @@
 <div class="btn-toolbar">
 <a type = "button" class="btn btn-default pull-right" href="{% url 'profile' %}">Back</a>
 
-<!-- <a type = "button "class="btn btn-default pull-right" href="{% url 'netproject' %}"> View All Projects</a>
-
-<a type = "button "class="btn btn-default pull-right" href="{% url 'addproject' %}"> <i class= "fa fa-plus-circle"></i> New Project</a> -->
+<a type = "button" class="btn btn-default pull-right" data-toggle="modal" data-target="#vendor_listing"> <i class= "fa fa-plus-circle"></i> New Vendor</a>
 </div>
 
 <div class="row">
 
 <div class='col-sm-12'>
-<h2 class="text-align-center">All Inventory</h2>   
+<h2 class="text-align-center">Register Vendor</h2>   
+<h4 class="text-align-center">{{vendor_message}} </h4>
 <div class='row'>
-    {% if material_data %}
+    {% if vendor_data %}
       <div class="table-responsive" >
-      <table id="viewTable" class="table table-condensed table-striped table-bordered table-hover no-margin" style="table-layout: fixed;">
+      <table id="viewVendor" class="table table-condensed table-striped table-bordered table-hover no-margin" style="table-layout: fixed;">
         <thead><tr>
           <!-- <th data-field="order_id" data-visible="false" style="display:none;"></th> -->
-          <th data-field="order_id" style="display:none;">Id</th>
-          <th data-field="added-on" style="display:none;"></th>
-          <th style="width:6%">Date</th>
-          <th style="width:6%">Project</th>
-          <th style="width:13%">Category</th>
-          <th style="width:10%">Item</th>
-          <th style="width:10%">Vendor</th>
-          <th style="width:5%">Item URL</th>
-          <th style="width:5%">Qty</th>    
-          <th style="width:7%">Price</th>
-          <th style="width:3%">ELT</th>
-          <th style="width:7%">Status</th>
-
+          <th data-field="vendor_id" style="display:none;">Id</th>
+          <th style="width:15%">Vendor</th>
+          <th style="width:15%">Address</th>
+          <th style="width:15%">GSTIN</th>
+          <th style="width:15%">Contact Person</th>
+          <th style="width:15%">Contact Mobile</th>
+          <th style="width:15%">Website</th>
+          <th style="width:10%">Modify</th>
         </tr></thead>
-        <tbody id="viewTableBody">
+        <tbody id="viewVendorBody">
 
          </tbody>
 
@@ -92,6 +86,7 @@
 
 </div>
 </div>
+{% include "vendor_listing.html" %}
 </div>
 {% endblock %}
 

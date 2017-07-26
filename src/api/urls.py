@@ -23,6 +23,8 @@ urlpatterns = [
 	url(r'^prototypes/$', views.prototype_list),
 	url(r'^prototypes/(?P<pk>[0-9]+)/$', views.prototype_details),
     url(r'^schedulecomments/$', views.schedule_comment_list),
+    url(r'^vendor/$', views.vendor_list),
+    url(r'^vendor/(?P<pk>[0-9]+)/$', views.vendor_details),
     url(r'^ordercomments/$', views.order_comment_list),
 	
 ]

@@ -1,5 +1,105 @@
 
+function populate_sub_category(category, sub_category){
 
+        selected_category = category;
+        console.log('category is',selected_category);
+        request_url = '/get_sub_category/' + selected_category + '/';
+        console.log(request_url);
+        $('#edit-modal-ele-subcategory').empty();
+        
+        $.ajax({
+            url: request_url,
+            contentType: "application/json",
+            dataType: "json",
+            success: function(response){
+                //response = jQuery.parseJSON(response)
+                console.log('data received on click');
+                
+                $.each(response, function(index, value){
+                   console.log('in here');
+                   $('#edit-modal-ele-subcategory').append($('<option>').text(value).attr('value', value));
+                    //$('#id_sub_category_choice').append(
+                         //$('<option></option>').val(index).html(text)
+                         //$("#results").html("<p>$_POST contained: " + res + "</p>");
+                     //);
+                });
+                $("#edit-modal-ele-subcategory").val(sub_category).find("option[value="+"'" + sub_category+"'" +"]").attr('selected', true);
+               
+            },
+           error: function (jqXHR, exception) {
+        var msg = '';
+        if (jqXHR.status === 0) {
+            msg = 'Not connect.\n Verify Network.';
+        } else if (jqXHR.status == 404) {
+            msg = 'Requested page not found. [404]';
+        } else if (jqXHR.status == 500) {
+            msg = 'Internal Server Error [500].';
+        } else if (exception === 'parsererror') {
+            msg = 'Requested JSON parse failed.';
+        } else if (exception === 'timeout') {
+            msg = 'Time out error.';
+        } else if (exception === 'abort') {
+            msg = 'Ajax request aborted.';
+        } else {
+            msg = 'Uncaught Error.\n' + jqXHR.responseText;
+        }
+        console.log(msg);
+    }, 
+        });
+        return false;
+   
+}
+function populate_vendor(vendor){
+
+  
+        console.log('vendor is',vendor);
+        request_url = '/get_vendors/';
+        console.log(request_url);
+        $('#edit-modal-ele-vendor').empty();
+        
+        $.ajax({
+            url: request_url,
+            contentType: "application/json",
+            dataType: "json",
+            success: function(response){
+                //response = jQuery.parseJSON(response)
+                console.log(response);
+                console.log('data received on click');
+                
+                $.each(response, function(index, value){
+                   console.log('in here');
+                   $('#edit-modal-ele-vendor').append($('<option>').text(value).attr('value', value));
+                    //$('#id_sub_category_choice').append(
+                         //$('<option></option>').val(index).html(text)
+                         //$("#results").html("<p>$_POST contained: " + res + "</p>");
+                     //);
+                });
+                $("#edit-modal-ele-vendor").val(vendor).find("option[value="+"'" + vendor+"'" +"]").attr('selected', true);
+               
+            },
+           error: function (jqXHR, exception) {
+        var msg = '';
+        if (jqXHR.status === 0) {
+            msg = 'Not connect.\n Verify Network.';
+        } else if (jqXHR.status == 404) {
+            msg = 'Requested page not found. [404]';
+        } else if (jqXHR.status == 500) {
+            msg = 'Internal Server Error [500].';
+        } else if (exception === 'parsererror') {
+            msg = 'Requested JSON parse failed.';
+        } else if (exception === 'timeout') {
+            msg = 'Time out error.';
+        } else if (exception === 'abort') {
+            msg = 'Ajax request aborted.';
+        } else {
+            msg = 'Uncaught Error.\n' + jqXHR.responseText;
+        }
+        console.log(msg);
+    }, 
+        });
+        return false;
+   
+}
 // // refresh chart with new data
 	function refresh_task_chart(data) {
 		var xAxisData = []
@@ -218,14 +318,17 @@
       var author = data[i].author.toString();
       var start_date_str = '' + sdate.getDate() + '/' + (sdate.getMonth()+1) + '/' + year + ' '+ hours+':'+mins+" "+author;
       var col_disp_date = $("<td style=\"font-size:15px\"></td>").text(start_date_str);
-      var col_category = $("<td style=\"font-size:15px\"></td>").text(data[i].order_category.toString()+"- "+data[i].order_sub_category.toString());
-      var col_sub_category = $("<td style=\"font-size:15px\"></td>").text(data[i].order_sub_category.toString());
+      var col_category = $("<td style=\"font-size:15px;overflow:hidden;white-space:nowrap;\"></td>").text(data[i].order_category.toString()+"- "+data[i].order_sub_category.toString());
+      var col_sub_category = $("<td style=\"font-size:15px;overflow:hidden;white-space:nowrap;\"></td>").text(data[i].order_sub_category.toString());
       var col_order = $("<td style=\"overflow:hidden;white-space:nowrap;font-size:15px\"></td>").text(data[i].order_item.toString());
       var col_vendor = $("<td></td>").text(data[i].order_vendor.toString());
       //var col_order_url = $("<td style=\"overflow:hidden;white-space:nowrap\"></td>").text(data[i].order_item_url.toString());
       var url = data[i].order_item_url.toString();
       //var col_order_url = $("<td><a href="+url+">Link</a></td>");
-
+      var lastChar = url.substr(url.length - 1);
+      if (lastChar =='/'){
+        url = url.substring(0, url.length - 1);
+      }
       var col_order_url = $("<td style=\"overflow:hidden;white-space:nowrap\"><a target="+"_blank"+" href="+url+">"+"URL"+"</a></td>");
       //console.log(url);
       var col_quantity = $("<td></td>").text(data[i].order_quantity.toString());      
@@ -393,13 +496,18 @@
               $("#edit-modal-ele-price").val(data.order_unit_price); 
               $("#edit-modal-ele-vendor").val(data.order_vendor); 
               $("#edit-modal-ele-url").val(data.order_item_url);
-              // var elt = data.est_lead_time;
-              // var est_lead_num = elt.slice(0,1);
-              // var est_lead_day = elt.slice(1,2);
+              
+              var elt = data.est_lead_time;
+              var est_lead_num = elt.slice(0,1);
+              var est_lead_day = elt.slice(1,2);
 
-              // $("#edit-modal-ele-num").val(est_lead_num);
-              // $("#edit-modal-ele-day").val(est_lead_day);   
+              $("#edit-modal-ele-num").val(est_lead_num);
+              $("#edit-modal-ele-day").val(est_lead_day);  
+              console.log('before call', data.order_category);
+              populate_sub_category(data.order_category, data.order_sub_category); 
+              populate_vendor(data.order_vendor);
               //if (data.order_status.status_id > 100)
+              //fetch_category(data.order_category);
               if (data.order_status.name === "Not Placed")
                  $("#editOrderModal").modal("show");
               else 
@@ -432,3 +540,106 @@
      
    });
   
+  function fetch_category(){
+        $('#orderTable').on('click','button.update_order',function(){
+
+        request_url = '/get_category/';
+        console.log(request_url);
+        $('#edit-modal-ele-category').empty();
+        
+        $.ajax({
+            url: request_url,
+            contentType: "application/json",
+            dataType: "json",
+            success: function(response){
+                //response = jQuery.parseJSON(response)
+                console.log('cat data received');
+                
+                $.each(response, function(index, value){
+                   console.log('in here');
+                   $('#edit-modal-ele-category').append($('<option>').text(value).attr('value', value));
+                });     
+                //$("#edit-modal-ele-category select").val(category);  
+               
+            },
+           error: function (jqXHR, exception) {
+        var msg = '';
+        if (jqXHR.status === 0) {
+            msg = 'Not connect.\n Verify Network.';
+        } else if (jqXHR.status == 404) {
+            msg = 'Requested page not found. [404]';
+        } else if (jqXHR.status == 500) {
+            msg = 'Internal Server Error [500].';
+        } else if (exception === 'parsererror') {
+            msg = 'Requested JSON parse failed.';
+        } else if (exception === 'timeout') {
+            msg = 'Time out error.';
+        } else if (exception === 'abort') {
+            msg = 'Ajax request aborted.';
+        } else {
+            msg = 'Uncaught Error.\n' + jqXHR.responseText;
+        }
+        console.log(msg);
+    }, 
+        });
+        return false;
+    });
+
+  }
+  fetch_category();
+
+  
+
+  function fetch_sub_category(){
+    $('#id_order_category, #edit-modal-ele-category').on('change', function() {
+        selected_category = $(this).val();
+        request_url = '/get_sub_category/' + selected_category + '/';
+        console.log(request_url);
+        $('#id_order_sub_category').empty();
+        $('#edit-modal-ele-subcategory').empty();
+        
+        $.ajax({
+            url: request_url,
+            contentType: "application/json",
+            dataType: "json",
+            success: function(response){
+                //response = jQuery.parseJSON(response)
+                console.log('data received');
+                
+                $.each(response, function(index, value){
+                   console.log('in here');
+                   $('#id_order_sub_category').append($('<option>').text(value).attr('value', value));
+                   $('#edit-modal-ele-subcategory').append($('<option>').text(value).attr('value', value));
+                    //$('#id_sub_category_choice').append(
+                         //$('<option></option>').val(index).html(text)
+                         //$("#results").html("<p>$_POST contained: " + res + "</p>");
+                     //);
+                });
+               
+            },
+           error: function (jqXHR, exception) {
+        var msg = '';
+        if (jqXHR.status === 0) {
+            msg = 'Not connect.\n Verify Network.';
+        } else if (jqXHR.status == 404) {
+            msg = 'Requested page not found. [404]';
+        } else if (jqXHR.status == 500) {
+            msg = 'Internal Server Error [500].';
+        } else if (exception === 'parsererror') {
+            msg = 'Requested JSON parse failed.';
+        } else if (exception === 'timeout') {
+            msg = 'Time out error.';
+        } else if (exception === 'abort') {
+            msg = 'Ajax request aborted.';
+        } else {
+            msg = 'Uncaught Error.\n' + jqXHR.responseText;
+        }
+        console.log(msg);
+    }, 
+        });
+        return false;
+    });
+}
+fetch_sub_category();
+
+

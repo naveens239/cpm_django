@@ -63,3 +63,80 @@ g_view_mat_data = null;
    
     
   }
+
+  function hide_fields(){
+    console.log('hide/show fields');
+      $('#div_id_category_choice').on('change', function() {
+        console.log('inside change');
+        if($('#id_category_choice').val() == "Others"){
+          $('#id_category').css('display','inline');
+          $('#div_id_category .control-label').css('display','inline');
+        }
+        else{
+          $('#id_category').css('display','none');
+          $('#div_id_category .control-label').css('display','none');
+        }
+      });
+
+      $('#div_id_sub_category_choice').on('change', function() {
+        if($('#id_sub_category_choice').val() == "Others"){
+          $('#id_sub_category').css('display','inline');
+          $('#div_id_sub_category .control-label').css('display','inline');
+        }
+        else{
+          $('#id_sub_category').css('display','none');
+          $('#div_id_sub_category .control-label').css('display','none');
+
+        }
+      });
+  }
+  hide_fields();
+function fetch_sub_category(){
+    $('#div_id_category_choice').on('change', function() {
+        selected_category = $('#id_category_choice').val();
+        request_url = '/get_sub_category/' + selected_category + '/';
+        console.log(request_url);
+        $('#id_sub_category_choice').empty();
+        
+        $.ajax({
+            url: request_url,
+            contentType: "application/json",
+            dataType: "json",
+            success: function(response){
+                //response = jQuery.parseJSON(response)
+                console.log('data received');
+                
+                $.each(response, function(index, value){
+                   console.log('in here');
+                   $('#id_sub_category_choice').append($('<option>').text(value).attr('value', value));
+                    //$('#id_sub_category_choice').append(
+                         //$('<option></option>').val(index).html(text)
+                         //$("#results").html("<p>$_POST contained: " + res + "</p>");
+                     //);
+                });
+                $('#id_sub_category_choice').append($('<option>').text('Others').attr('value', 'Others'));
+            },
+           error: function (jqXHR, exception) {
+        var msg = '';
+        if (jqXHR.status === 0) {
+            msg = 'Not connect.\n Verify Network.';
+        } else if (jqXHR.status == 404) {
+            msg = 'Requested page not found. [404]';
+        } else if (jqXHR.status == 500) {
+            msg = 'Internal Server Error [500].';
+        } else if (exception === 'parsererror') {
+            msg = 'Requested JSON parse failed.';
+        } else if (exception === 'timeout') {
+            msg = 'Time out error.';
+        } else if (exception === 'abort') {
+            msg = 'Ajax request aborted.';
+        } else {
+            msg = 'Uncaught Error.\n' + jqXHR.responseText;
+        }
+        console.log(msg);
+    }, 
+        });
+        return false;
+    });
+}
+fetch_sub_category();
