@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from cpm.models import Project, Schedule, Material, OrderStatus, Prototype, ScheduleComment, MaterialComment, VendorList
+from cpm.models import Project, Schedule, Material, OrderStatus, Prototype, ScheduleComment, MaterialComment, VendorList,OrderPriority,ReadCommentTrack
 
 class ProjectSerializer(serializers.ModelSerializer):
 	class Meta:
@@ -18,6 +18,10 @@ class MaterialSerializer(serializers.ModelSerializer):
 		fields='__all__'
 		depth = 1
 
+class PrioritySerializer(serializers.ModelSerializer):
+	class Meta:
+		model = OrderPriority
+		fields='__all__'
 
 class StatusSerializer(serializers.ModelSerializer):
 	class Meta:
@@ -42,4 +46,9 @@ class MaterialCommentSerializer(serializers.ModelSerializer):
 class VendorListSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = VendorList
+		fields='__all__'
+
+class TrackCommentSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = ReadCommentTrack
 		fields='__all__'

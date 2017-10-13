@@ -12,7 +12,7 @@
 			     <div class="col-sm-6" style="font-size: 15px;">
 			          <label>Category</label>
 			         <!-- <input id="edit-modal-ele-category" class="form-control" name="order_category" type="text" > -->
-			          <select id="edit-modal-ele-category" class="form-control" name="order_category"></select>
+			          <select id="edit-modal-ele-category"  class="form-control" name="order_category"></select>
 		         <br>
 		         </div>
 		         <div class="col-sm-6" style="font-size: 15px;">
@@ -73,11 +73,7 @@
 			         <option value=400>Plan-B</option></select>
 			        <br>
 		         </div>
-			     <div class="col-sm-6" style="font-size: 15px;">
-			          <label>HSN</label>
-			         <input id="edit-modal-ele-hsn" class="form-control" name="order_hsn" type="text" >	
-			         <br>
-		         </div>
+			     
 			     <input type='hidden' class="form-control required"  name = 'model_instance' id="edit-modal-header-ele-order-id" />
 			     <input type='hidden' class="form-control required"  name = 'order_status' id="edit-modal-ele-status" />
 			     <input id="edit-order-modal-submit" type="submit" name = "order_edit" class="btn btn-warning btn-lg" style="width: 100%" value="Update">
@@ -104,50 +100,7 @@
 			        <h4 class="modal-title custom_align text-align-center" id="Heading">Edit Order Detail <!-- - <span id="edit-model-header-ele-id">1</span> --></h4>
 			  </div>
 	          <div class="modal-body">
-	          	<h5 class="text-align-center">Sorry, you can only edit an order that is Not Approved or Not Placed.<br> Please contact admin.</h5>
-	          </div>
-	        
-	          <div class="modal-footer ">
-	             <!-- <button type="button" name=edit class="btn btn-warning btn-lg" style="width: 100%;">Update</button> -->
-	         </div>
-	      </div>
-	    <!-- /.modal-content --> 
-	    </div>
-	      <!-- /.modal-dialog --> 
-	</div>
-
-	<div class="modal fade" id="editStatusModal" tabindex="-1" role="dialog" aria-labelledby="edit" aria-hidden="true">
-	   <div class="modal-dialog">
-		 <div class="modal-content">
-			 <div class="modal-header">
-			        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
-			        <i class="fa fa-times-circle fa-lg"></i></button>
-			        <h4 class="modal-title custom_align text-align-center" id="Heading">Edit Status Detail <!-- - <span id="edit-model-header-ele-id">1</span> --></h4>
-			  </div>
-	          <div class="modal-body">
-	          	<form  class="form"  method='POST' action=""  enctype="application/x-www-form-urlencoded">{% csrf_token %}
-				     <div  style="font-size: 15px;">
-				          <label>Status</label>
-				         <select id="status-modal-ele-status"  class="form-control" name="order_status">
-				         <option value=600>Working</option>
-				         <option value=700>Not Working</option></select>
-			         </div>
-
-			        <input type='hidden' class="form-control required"  name = 'model_instance' id="status-modal-header-ele-order-id" />
-		            <input type='hidden' class="form-control required"  name = 'order_category' id="status-modal-ele-category" />
-		            <input type='hidden' class="form-control required"  name = 'order_sub_category' id="status-modal-ele-subcategory" />
-		            <input type='hidden' class="form-control required"  name = 'order_item' id="status-modal-ele-item" />
-		            <input type='hidden' class="form-control required"  name = 'order_vendor' id="status-modal-ele-vendor" />
-		            <input type='hidden' class="form-control required"  name = 'order_item_url' id="status-modal-ele-url" />
-		            <input type='hidden' class="form-control required"  name = 'order_quantity' id="status-modal-ele-quantity" />
-		            <input type='hidden' class="form-control required"  name = 'order_currency' id="status-modal-ele-currency" />
-		            <input type='hidden' class="form-control required"  name = 'order_unit_price' id="status-modal-ele-price" />
-		            <input type='hidden' class="form-control required"  name = 'order_priority' id="status-modal-ele-priority" />
-		            <input type='hidden' class="form-control required"  name = 'est_lead_num' id="status-modal-ele-num" />
-                    <input type='hidden' class="form-control required"  name = 'est_lead_days' id="status-modal-ele-day" />
-			        <input type='hidden' class="form-control required"  name = 'order_hsn' id="status-modal-ele-hsn" />
-			        <input id="edit-order-modal-submit" type="submit" name = "order_edit" class="btn btn-warning btn-lg" style="width: 100%" value="Update">
-		        </form>
+	          	<label class="text-align-center">Sorry, you can only edit an order that is Not yet Approved.<br> Please contact admin.</label>
 	          </div>
 	        
 	          <div class="modal-footer ">

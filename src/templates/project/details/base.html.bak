@@ -90,20 +90,17 @@ form {
 	    
 
   <ul class="nav nav-tabs" id="detail_tabs">
-   
-    <li class="active"><a data-toggle="tab" href="#plan">Plan</a></li>
+    <li class="active" ><a data-toggle="tab" href="#plan">Plan</a></li>
     <li><a data-toggle="tab" href="#schedule">Schedule</a></li>
-     <li ><a data-toggle="tab" href="#bom">BOM</a></li>
+    <li><a data-toggle="tab" href="#bom">BOM</a></li>
     <li><a data-toggle="tab" href="#building">Prototype</a></li>
   </ul>
 
 
 <div class="tab-content">
-    
      {% include "project/details/plan_tab.html" %}
-     {% include "project/details/schedule_tab.html" %}
-      {% include "project/details/bom_tab.html" %}
-    
+    {% include "project/details/schedule_tab.html" %}
+     {% include "project/details/bom_tab.html" %}
      {% include "project/details/prototype_tab.html" %}
 		
 </div>
@@ -120,9 +117,6 @@ form {
 {% block javascript_page %}
 <script>
 	var project_id = {{ project_data.id }};
-  var project_name = "{{ project_data.name}}";
-  var staff_status = {{ request.user.is_staff|yesno:"true,false" }};
-  var user = "{{ request.user }}";
 </script>
 
 
@@ -156,31 +150,14 @@ $("ul.nav-tabs > li > a").on("shown.bs.tab", function(e) {
   console.log('id is '+id)
   window.location.hash = id;
 });
-
+$( "#bom" ).on( "shown.bs.tab", function( event, ui ) 
+{
+  $(window).triggerHandler("resize");
+} );
 // on load of the page: switch to the currently selected tab
 var hash = window.location.hash;
 console.log('hash is'+hash)
 $('#detail_tabs a[href="' + hash + '"]').tab('show');
-// if (hash==""){
-//   $('#detail_tabs a[href="' + '#bom' + '"]').tab('show');
-// }else{
-// $('#detail_tabs a[href="' + hash + '"]').tab('show');}
-
-
-// $('[href="#bom"]').parent().click(function(){
-//   //window.location.reload();
-//   //console.log('after reload');
-//   var activeTab = "#bom";
-
-// $('[href="#bom"]').show();
-// $('[href="#plan"]').hide();
-//       $('[href="#schedule"]').hide();
-//        $('[href="#building"]').hide();
-//   window.location.reload();
-//   //var hash='bom';
-//    //$('#detail_tabs a[href="' + hash + '"]').tab('show');
-// });
-
 </script>
 
 <script type="text/javascript" src="{% static 'js/project/net_details.js' %}"></script>

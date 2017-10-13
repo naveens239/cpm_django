@@ -26,5 +26,6 @@ urlpatterns = [
     url(r'^vendor/$', views.vendor_list),
     url(r'^vendor/(?P<pk>[0-9]+)/$', views.vendor_details),
     url(r'^ordercomments/$', views.order_comment_list),
+    url(r'^commentrack/$', views.comment_track),
 	
 ]

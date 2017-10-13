@@ -20,35 +20,46 @@
         <form class="form" method='POST' action="" enctype="multipart/form-data">{% csrf_token %}
 			{{excel_form|crispy}}
 			<button class="btn btn-default" name="excel_data" type="submit">Upload Excel</button>
+			
 		</form> 
-	
-
-	    <h5 class="text-align-center">{{order_message}}</h5>
+		<form class="form" method='POST' action="" enctype="multipart/form-data">{% csrf_token %}
+			<button class="btn btn-default" name="download_excel" type="submit">Download Excel</button>
+		</form> 
+        <div class="text-align-left" style="text-align: right;">
+	    <h5 class="text-align-center pull-right" style="font-size: 17px;">Price Estimate: &nbsp;&nbsp;<input id="estimate-price" name="estimate-price-sum" type="text" disabled="True"></h5></div>
+        <br><br>
+	    <h5 class="text-align-center">{{request.session.order_message}}</h5>
+	    <!-- <h5 class="text-align-center">{{request.session.status_message}}</h5> -->
 
 
    		{% if order_data %}
-	    <div class="table-responsive" >
-			<table id="orderTable" class="table table-condensed table-striped table-bordered table-hover no-margin" style="table-layout: fixed;">
+	    <div class="table-responsive">
+			<table id="orderTable" class="display responsive no-wrap" style="width:1145px; table-layout: fixed;" cellspacing="0">
 				<thead><tr>
 					<!-- <th data-field="order_id" data-visible="false" style="display:none;"></th> -->
 					<th data-field="order_id" style="display:none;">Id</th>
 					<th data-field="added-on" style="display:none;"></th>
-					<th style="width:6%">Date</th>
-					<th style="width:13%">Category</th>
+					<th style="width:6%;font-size: 15px;">Date</th>
+					<th style="width:7%;font-size: 15px;">Category</th>
 					<!-- <th data-field="sub_category" style="display:none;">Sub Category</th> -->
-					<th style="width:10%">Item</th>
-					<th style="width:10%">Vendor</th>
-					<th style="width:5%">Item URL</th>
-					<th style="width:5%">Qty</th>
+					<th style="width:18%;font-size: 15px;">Item</th>
+					<th style="width:8%;font-size: 15px;">Vendor</th>
+					<th style="width:5%;font-size: 15px;">Item URL</th>
+					<th style="width:5%;font-size: 15px;">Qty</th>
 					<!-- <th style="width:5%">Unit</th> -->
-					<th style="width:7%">Price</th>
-					<th style="width:5%">ELT</th>
+					<th style="width:9%;font-size: 15px;">Price</th>
+					<th style="width:5%;font-size: 15px;">ELT</th>
 					<!-- <th data-field="order_status_id" data-visible="false" style="display:none;"></th> -->
 					<!-- <th data-field="order_status_id" style="width:3%">Status position</th> -->
-					<th style="width:9%">Status</th>
-                    <th style="width:5%">Track</th>
+					<th style="width:7%;font-size: 15px;">Priority</th>
+					<th style="width:5%;font-size: 15px;">HSN</th>
+					<th style="width:7%;font-size: 15px;">Status</th>
+                    
+                    <th style="width:7%;font-size: 15px;">Track</th>
 					<!-- <th style="width:5%">Ask</th> -->
-					<th style="width:15%">Modify</th>
+					<th style="width:11%;font-size: 15px;">Modify</th>
+					<th data-field="comm_id" style="display:none;">CommId</th>
+					
 					<!-- <th style="width:5%">Delete</th> -->
 
 				</tr></thead>

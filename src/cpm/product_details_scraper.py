@@ -19,7 +19,7 @@ def AmazonParser(url):
 
             XPATH_NAME = '//h1[@id="title"]//text()'
             XPATH_SALE_PRICE = '//span[contains(@id,"ourprice") or contains(@id,"saleprice")]/text()'
-            XPATH_ORIGINAL_PRICE = '//td[contains(text(),"List Price") or contains(text(),"M.R.P") or contains(text(),"Price")]/following-sibling::td/text()'
+            XPATH_ORIGINAL_PRICE = '//td[contains(text(),"List Price") or contains(text(),"M.R.P") or contains(text(),"Price:")]/following-sibling::td/text()'
             XPATH_CATEGORY = '//a[@class="a-link-normal a-color-tertiary"]//text()'
             XPATH_AVAILABILITY = '//div[@id="availability"]//text()'
  
@@ -31,13 +31,14 @@ def AmazonParser(url):
             CATEGORY_array=[]
             NAME = ' '.join(''.join(RAW_NAME).split()) if RAW_NAME else None
             SALE_PRICE = ' '.join(''.join(RAW_SALE_PRICE).split()).strip() if RAW_SALE_PRICE else None
-            print 'before category'
+            print 'before category', RAW_CATEGORY
             CATEGORY = '>'.join([i.strip() for i in RAW_CATEGORY]) if RAW_CATEGORY else None
-            print 'after category'
+            print 'after category', CATEGORY
             ORIGINAL_PRICE = ''.join(RAW_ORIGINAL_PRICE).strip() if RAW_ORIGINAL_PRICE else None
+            print 'price has issue', RAW_ORIGINAL_PRICE
             AVAILABILITY = ''.join(RAW_AVAILABILITY).strip() if RAW_AVAILABILITY else None
             
-            if not ORIGINAL_PRICE or SALE_PRICE:
+            if (not ORIGINAL_PRICE or SALE_PRICE) and (type(SALE_PRICE)!=str):
                 ORIGINAL_PRICE = SALE_PRICE
  
             if page.status_code!=200:
@@ -50,15 +51,25 @@ def AmazonParser(url):
             else:
                 CATEGORY = CATEGORY
                 SUBCATEGORY = CATEGORY
-            print 'string is',ORIGINAL_PRICE
-            match = re.search(r'([\D]+)([\d,.]+)', ORIGINAL_PRICE)
-            output = (match.group(1), match.group(2).replace(',',''))
-            print 'output is',output[1]
+            
+            
+            #print 'output is',output[1]
             #ORIGINAL_PRICE = output[1]
-            CURRENCY = output[0]
-            ORIGINAL_PRICE = output[1]
-            if CURRENCY =='.':
-                CURRENCY = "Rs"
+            #CURRENCY = output[0]
+            #ORIGINAL_PRICE = output[1]
+            #CURRENCY=""
+            #if "amazon.in" in url:
+            CURRENCY = "Rs"
+            print 'price is',ORIGINAL_PRICE
+            #elif "amazon.com" in url:
+
+            #    print 'inside .com'
+                #match = re.search(r'([\D]+)([\d,.]+)', ORIGINAL_PRICE)
+                #output = (match.group(1), match.group(2).replace(',',''))
+
+            ORIGINAL_PRICE = ORIGINAL_PRICE
+                #CURRENCY = "$"
+            #print 'price is',ORIGINAL_PRICE.encode("utf-8")
             print CURRENCY
             data = {
                     'ITEM':NAME,
@@ -122,7 +133,7 @@ def EbayParser(url):
             output = (match.group(1), match.group(2).replace(',',''))
             print 'output is',output[1]
             ORIGINAL_PRICE = output[1]
-            CURRENCY = output[0]
+            CURRENCY = "Rs"
             data = {
                     'ITEM':NAME,
                     'SALE_PRICE':SALE_PRICE,
@@ -383,13 +394,14 @@ def RobotParser(url):
 
 def ReadAsin(url):
     extracted_data = []
+        
     check_domain = urlparse(url).hostname
-    print check_domain
-    if 'amazon' in check_domain:
+    print 'domain',check_domain
+    if 'amazon.in' in check_domain:
        extracted_data.append(AmazonParser(url))
        #f=open('data.json','w')
        #json.dump(extracted_data,f,indent=4)
-    elif 'ebay' in check_domain:
+    elif 'ebay.in' in check_domain:
        extracted_data.append(EbayParser(url))
        #f=open('data.json','w')
        #json.dump(extracted_data,f,indent=4)
@@ -407,9 +419,26 @@ def ReadAsin(url):
        extracted_data.append(RobotParser(url))
        # f=open('data.json','w')
        # json.dump(extracted_data,f,indent=4)
+    else:
+        domain=[]
+        domain = check_domain.split('.')
+        print domain
+        data = {
+                    'ITEM':"",
+                    'SALE_PRICE':0.00,
+                    'CATEGORY':"",
+                    'SUBCATEGORY': "",
+                    'ORIGINAL_PRICE':0.00,
+                    'CURRENCY':"",
+                    'AVAILABILITY':"",
+                    'URL':url,
+                    'VENDOR': domain[1]
+                    }
+        extracted_data.append(data)
     return extracted_data
- 
+
  
 if __name__ == "__main__":
+
   ReadAsin('http://www.3dprintronics.com/3d-printer-filaments#!/Red-PLA-1-75-Filament/p/27910566/category=6988017')
   #ReadAsin('https://www.amazon.com/dp/B01L0PS2IA?psc=1&smid=A3JC02LVN0LU5G')

@@ -2,8 +2,8 @@ from django.contrib import admin
 
 # Register your models here.
 from .forms import SignUpForm, AddNewProjectForm
-from .models import SignUp, Project, Stage, StageSetting, Role, Team, Plan, Schedule,Material, OrderStatus,Prototype
-from .models import MaterialComment, ScheduleComment, Courier, TrackingInfo, CategoryList, VendorList
+from .models import SignUp, Project, Stage, StageSetting, Role, Team, Plan, Schedule,Material, OrderStatus,Prototype,OrderPriority
+from .models import MaterialComment, ScheduleComment, Courier, TrackingInfo, CategoryList, VendorList,ReadCommentTrack
 
 
 class SignUpAdmin(admin.ModelAdmin):
@@ -47,9 +47,14 @@ class OrderStatusAdmin(admin.ModelAdmin):
    list_display = ["name", "status_id"]  
 admin.site.register(OrderStatus, OrderStatusAdmin)
 
+class OrderPriorityAdmin(admin.ModelAdmin):
+   list_display = ["name", "priority_id"]  
+admin.site.register(OrderPriority, OrderPriorityAdmin)
+
 class MaterialAdmin(admin.ModelAdmin):
    list_display = ["project_name","order_category","order_sub_category","order_item","order_vendor",
-                  "order_item_url","order_quantity","order_currency","order_unit_price","order_status","author","added_on","est_lead_time"]
+                  "order_item_url","order_quantity","order_currency","order_unit_price","order_status",
+                  "author","added_on","est_lead_time","order_priority","order_hsn"]
 admin.site.register(Material, MaterialAdmin)
 
 class PrototypeAdmin(admin.ModelAdmin):
@@ -71,6 +76,10 @@ admin.site.register(CategoryList,CategoryListAdmin)
 class VendorListAdmin(admin.ModelAdmin):
    list_display = ["vendor_name","GSTIN","address","contact_person","contact_num","website"]
 admin.site.register(VendorList,VendorListAdmin)
+
+class ReadCommentTrackAdmin(admin.ModelAdmin):
+   list_display = ["user_name","order_id","project_id","read_flag"]
+admin.site.register(ReadCommentTrack,ReadCommentTrackAdmin)
 
 class CourierAdmin(admin.ModelAdmin):
    list_display = ["name","slug"]

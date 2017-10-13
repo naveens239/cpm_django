@@ -2,9 +2,9 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from cpm.models import Project, Schedule, Material, OrderStatus, Prototype, ScheduleComment, MaterialComment, VendorList
-from api.serializer import ProjectSerializer, ScheduleSerializer, MaterialSerializer, VendorListSerializer
-from api.serializer import StatusSerializer, PrototypeSerializer,ScheduleCommentSerializer, MaterialCommentSerializer
+from cpm.models import Project, Schedule, Material, OrderStatus, Prototype, ScheduleComment, MaterialComment, VendorList, OrderPriority, ReadCommentTrack
+from api.serializer import ProjectSerializer, ScheduleSerializer, MaterialSerializer, VendorListSerializer,PrioritySerializer
+from api.serializer import StatusSerializer, PrototypeSerializer,ScheduleCommentSerializer, MaterialCommentSerializer, TrackCommentSerializer
 
 @api_view(['GET'])
 def project_list(request, format=None):
@@ -55,6 +55,7 @@ def material_list(request, format=None):
         return Response(serializer.data)
     else:
         print 'method is ',request.method
+        
 @api_view(['GET','PUT'])
 def material_details(request, pk):
     try:
@@ -77,6 +78,13 @@ def status_list(request, format=None):
     if request.method == 'GET':
         status = OrderStatus.objects.all()
         serializer = StatusSerializer(status, many=True)
+        return Response(serializer.data)
+
+@api_view(['GET'])
+def priority_list(request, format=None):
+    if request.method == 'GET':
+        priority = OrderPriority.objects.all()
+        serializer = PrioritySerializer(priority, many=True)
         return Response(serializer.data)
 
 @api_view(['GET'])
@@ -155,6 +163,32 @@ def vendor_details(request, pk):
         return Response(serializer.data)
     elif request.method == 'PUT':
         serializer = VendorListSerializer(s,data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET','PUT'])
+def comment_track(request,format=None):
+    
+    
+    if request.method == 'GET':
+        qfilter = {}
+        params = request.query_params
+        if 'project_id' in params:
+            qfilter['project_id'] = int(params['project_id'])
+        comments = ReadCommentTrack.objects.filter(**qfilter).filter(user_name=request.user)
+        print 'comments are', comments
+        serializer = TrackCommentSerializer(comments, many=True)
+        return Response(serializer.data)
+    elif request.method == 'PUT':
+        print request.data
+        try:
+           s = ReadCommentTrack.objects.get(id=request.POST.get("id"))
+        except ReadCommentTrack.DoesNotExist:
+           return Response(status=status.HTTP_404_NOT_FOUND)
+        print 'here in comments'
+        serializer = TrackCommentSerializer(s,data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)

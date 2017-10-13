@@ -335,7 +335,7 @@ function populate_vendor(vendor){
       if (lastChar =='/'){
         url = url.substring(0, url.length - 1);
       }
-      var col_order_url = $("<td style=\"overflow:hidden;white-space:nowrap\"><a target="+"_blank"+" href="+url+">"+url+"</a></td>");
+      var col_order_url = $("<td style=\"overflow:hidden;white-space:nowrap\"><a target="+"_blank"+" href="+url+">"+"URL"+"</a></td>");
       var col_quantity = $("<td style=\"font-size:15px;\"></td>").text(data[i].order_quantity.toString());      
       var col_currency = $("<td style=\"font-size:15px;\"></td>").text(data[i].order_currency.toString()); 
       var col_price = $("<td style=\"font-size:15px;\"></td>").text(data[i].order_currency.toString()+data[i].order_unit_price.toString());
@@ -349,15 +349,6 @@ function populate_vendor(vendor){
       }
       else if (status === "Not Placed"){
           var col_status_butn =   $('<td class=\"row-order-status-name\"><button style=\"background-color:blue;\" class=" btn btn-primary status_app" data-title="place">Place</button></td>');
-      }
-      else if (status === "Not Shipped"){
-          var col_status_butn =   $('<td class=\"row-order-status-name\"><button style=\"background-color:orange;\" class=" btn btn-primary status_app" data-title="ship">To Ship</button></td>');
-      }
-      else if (status === "Not Delivered"){
-          var col_status_butn =   $('<td class=\"row-order-status-name\"><button style=\"background-color:green;\" class=" btn btn-primary status_app" data-title="deliver">Delivery</button></td>');
-      }
-      else if (status === "Delivered"){
-          var col_status_butn =   $('<td class=\"row-order-status-name\"><button style=\"background-color:violet;padding:4px;\" class=" btn btn-primary status_app" data-title="working">W</button>&nbsp;<button style=\"background-color:grey;padding:4px;\" class=" btn btn-primary status_app" data-title="not working">NW</button></td>');
       }
       else{
           //alert('out of approve');
@@ -424,14 +415,14 @@ function populate_vendor(vendor){
            extend: 'pdf',
            footer: true,
            exportOptions: {
-                columns: [2,3,4,5,6,7,8,11]
+                columns: [2,3,4,5,6,7]
             }
        },
        {
            extend: 'csv',
            footer: false,
            exportOptions: {
-                columns: [0,2,3,4,5,6,7,8,11]
+                columns: [0,2,3,4,5,6,7]
             }
           
        },
@@ -439,7 +430,7 @@ function populate_vendor(vendor){
            extend: 'excel',
            footer: false,
            exportOptions: {
-                columns: [0,2,3,4,5,6,7,8,11]
+                columns: [0,2,3,4,5,6,7]
             }
        }         
     ],  
@@ -548,12 +539,11 @@ var csrftoken = getCookie('csrftoken');
           var order_id = parseInt($(this).closest('tr').find('.row-order-id').text());
           console.log(order_id);
           
-          //var status = $(this).closest('tr').find('.row-order-status-name').text();
-          var status = $(this).attr("data-title");
-          console.log('status.....'+status +" "+project_id+" "+$(this).attr("data-title"));
+          var status = $(this).closest('tr').find('.row-order-status-name').text();
+          console.log('status.....'+status +" "+project_id);
           var data = {"status":status,"order_id":order_id,"project_id":project_id,"csrfmiddlewaretoken": csrftoken };
           console.log(data);
-          $.post("/projectdetails/"+project_name+"/", data,  function(data) {document.location.reload();});
+          $.post("/projectdetails/"+project_name+"/", data,  function(data) {window.location.reload(true);});
           //$("#trackOrderModal").modal("show");
 
      });
@@ -675,68 +665,34 @@ var csrftoken = getCookie('csrftoken');
           $.ajax({
             url:'/api/materials/' + order_id,
             success: function(data) {
-              
-              var status_id = data.order_status.status_id;
-              var item = data.order_item;    
-              var category = data.order_category;    
-              var subcategory = data.order_sub_category;    
-              var quantity = data.order_quantity;    
-              var currency = data.order_currency; 
-              var price = data.order_unit_price; 
-              var vendor = data.order_vendor; 
-              var url = data.order_item_url;
-              var priority_id = data.order_priority.priority_id;
-              var hsn = data.order_hsn;
+              $('#edit-modal-header-ele-order-id').val(order_id);
+              $("#edit-modal-ele-status").val(data.order_status.status_id);
+              $("#edit-modal-ele-item").val(data.order_item);    
+              $("#edit-modal-ele-category").val(data.order_category);    
+              $("#edit-modal-ele-subcategory").val(data.order_sub_category);    
+              $("#edit-modal-ele-quantity").val(data.order_quantity);    
+              $("#edit-modal-ele-currency").val(data.order_currency); 
+              $("#edit-modal-ele-price").val(data.order_unit_price); 
+              $("#edit-modal-ele-vendor").val(data.order_vendor); 
+              $("#edit-modal-ele-url").val(data.order_item_url);
+              $("#edit-modal-ele-priority").val(data.order_priority.priority_id);
+              $("#edit-modal-ele-hsn").val(data.order_hsn);
               
               var elt = data.est_lead_time;
               var est_lead_num = elt.slice(0,1);
               var est_lead_day = elt.slice(1,2);
 
-             
-               
+              $("#edit-modal-ele-num").val(est_lead_num);
+              $("#edit-modal-ele-day").val(est_lead_day);  
               console.log('before call', data.order_category);
-              populate_sub_category(category, subcategory); 
-              populate_vendor(vendor);
+              populate_sub_category(data.order_category, data.order_sub_category); 
+              populate_vendor(data.order_vendor);
               //if (data.order_status.status_id > 100)
               //fetch_category(data.order_category);
-              if (data.order_status.name === "Not Approved" || data.order_status.name === "Not Placed" ){
-                 document.getElementById("edit-modal-header-ele-order-id").value = order_id;
-                 document.getElementById("edit-modal-ele-status").value = status_id;
-                 document.getElementById("edit-modal-ele-item").value = item;
-                 document.getElementById("edit-modal-ele-category").value = category;
-                 document.getElementById("edit-modal-ele-subcategory").value = subcategory;
-                 document.getElementById("edit-modal-ele-quantity").value = quantity;
-                 document.getElementById("edit-modal-ele-currency").value = currency;
-                 document.getElementById("edit-modal-ele-price").value = price;
-                 document.getElementById("edit-modal-ele-vendor").value = vendor;
-                 document.getElementById("edit-modal-ele-url").value = url;
-                 document.getElementById("edit-modal-ele-priority").value = priority_id;
-                 document.getElementById("edit-modal-ele-hsn").value = hsn;
-                 document.getElementById("edit-modal-ele-num").value = est_lead_num;
-                 document.getElementById("edit-modal-ele-day").value = est_lead_day;
-
+              if (data.order_status.name === "Not Approved" || data.order_status.name === "Not Placed")
                  $("#editOrderModal").modal("show");
-               }
-              else if (data.order_status.name === "Not Working" || data.order_status.name === "Working"){
-                 document.getElementById("status-modal-header-ele-order-id").value = order_id;
-                 document.getElementById("status-modal-ele-status").value = status_id;
-                 document.getElementById("status-modal-ele-item").value = item;
-                 document.getElementById("status-modal-ele-category").value = category;
-                 document.getElementById("status-modal-ele-subcategory").value = subcategory;
-                 document.getElementById("status-modal-ele-quantity").value = quantity;
-                 document.getElementById("status-modal-ele-currency").value = currency;
-                 document.getElementById("status-modal-ele-price").value = price;
-                 document.getElementById("status-modal-ele-vendor").value = vendor;
-                 document.getElementById("status-modal-ele-url").value = url;
-                 document.getElementById("status-modal-ele-priority").value = priority_id;
-                 document.getElementById("status-modal-ele-hsn").value = hsn;
-                 document.getElementById("status-modal-ele-num").value = est_lead_num;
-                 document.getElementById("status-modal-ele-day").value = est_lead_day;
-                 $("#editStatusModal").modal("show");
-               }
               else 
                  $("#editErrorOrderModal").modal("show");
-
             }
           })
       });

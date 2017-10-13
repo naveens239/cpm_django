@@ -1,5 +1,6 @@
 from django.shortcuts import render, render_to_response,redirect
 from django.http import HttpResponseRedirect, HttpResponse
+from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.core import serializers
 from .forms import ContactForm, SignUpForm,AddNewProjectForm,ProjectStageForm,TeamAddForm,TeamEditForm, OrderListingForm, TrackingForm
@@ -7,9 +8,9 @@ from .forms import ProjectPlanForm,ScheduleForm,ScheduleEditForm, MaterialForm, 
 from django.core.mail import send_mail
 from django.conf import settings
 from .models import Project, Stage, StageSetting, Team, Role,Plan, Schedule, Material, OrderStatus, Prototype, ScheduleComment, MaterialComment
-from .models import TrackingInfo, Courier, CategoryList, VendorList
+from .models import TrackingInfo, Courier, CategoryList, VendorList, OrderPriority,ReadCommentTrack
 from product_details_scraper import ReadAsin
-import json, ast, datetime,re
+import json, ast, datetime,re,mimetypes,os
 import openpyxl
 import aftership as aftership
 
@@ -158,6 +159,7 @@ def get_vendors(request):
        cat.append(sc[0])
     print cat
     return HttpResponse(json.dumps(cat), content_type="application/json")
+
 def get_category(request):
     print 'in here sub category filtering'
     cat_data = CategoryList.objects.all().values_list("category","category").distinct()
@@ -450,6 +452,32 @@ def projectdetails(request,name):
       order_message = ""
       prototype_message =""
       process_message = ""
+      status_message = ""
+
+      if request.method =='POST' and 'status' in request.POST:
+        print 'status data pass success',request
+        order_id = request.POST.get("order_id")
+        status_val = request.POST.get("status")
+        m = Material.objects.get(id=order_id)
+        old_status = m.order_status.status_id
+        if old_status < 500:
+           new_status = old_status+100 # change status
+        elif old_status == 500 and status_val =="working":
+           new_status = 600
+        elif old_status == 500 and status_val =="not working":
+           new_status = 700
+        m.order_status = OrderStatus.objects.get(status_id=new_status)
+        m.save(update_fields=['order_status'])
+        status_message="Status updated Successfully"    
+        o = OrderStatus.objects.get(status_id=old_status)
+        n = OrderStatus.objects.get(status_id=new_status)
+        author = request.user
+        comment = "Changed order status from \""+o.name+"\" to \""+n.name+"\""
+        c = MaterialComment(material=m,comment=comment,author=author)
+        c.save()
+        status_message="Status updated successfully"
+        request.session['order_message'] = status_message
+        return HttpResponseRedirect(reverse('projectdetails', args=[project_data.name ]))
       if request.method=='POST' and 'plan' in request.POST:
         plan_form = ProjectPlanForm(request.POST or None)
         if plan_form.is_valid():
@@ -469,12 +497,15 @@ def projectdetails(request,name):
                 if not project_plan and not business_plan and not wiki_link:
                   p.delete()
                 plan_message="Plan Updated Successfully"
+                request.session['plan_message'] = plan_message
+                return HttpResponseRedirect(reverse('projectdetails', args=[project_data.name ]))
             except Plan.DoesNotExist:
                 p = Plan(project_name=project_data,project_plan=project_plan,
                   business_plan=business_plan,wiki_link=wiki_link,prototype_url=prototype_url,weblink_url=weblink_url)
                 p.save()
                 plan_message="Plan Added Successfully"
-       
+                request.session['plan_message'] = plan_message
+                return HttpResponseRedirect(reverse('projectdetails', args=[project_data.name ]))
       if request.method=='POST' and 'schedule_save' in request.POST:
          schedule_form = ScheduleForm(request.POST or None)
          print request.POST
@@ -493,12 +524,15 @@ def projectdetails(request,name):
             else:
                p.save()
                task_message="Task Added Successfully"
+            request.session['task_message'] = task_message
+            return HttpResponseRedirect(reverse('projectdetails', args=[project_data.name ]))
          else:
             print 'errror in herereeeee'
             print request.method
             task_message="Task could not be added"
             print schedule_form.errors
-      
+            request.session['task_message'] = task_message
+            return HttpResponseRedirect(reverse('projectdetails', args=[project_data.name ]))
       if request.method=='POST' and 'schedule_edit' in request.POST:
          schedule_edit_form = ScheduleEditForm(request.POST or None)
          print request.POST
@@ -530,17 +564,22 @@ def projectdetails(request,name):
                else:
                   p.save()
                   task_message="Task Updated Successfully"
+               request.session['task_message'] = task_message
+               return HttpResponseRedirect(reverse('projectdetails', args=[project_data.name ]))
             except Schedule.DoesNotExist:
                role_assigned_to = Role.objects.get(id=assigned_id)     
                p = Schedule(project_name=project_data,assigned_to=role_assigned_to,start_date=start_date,end_date=end_date,task_name=task_name)
                p.save()
                task_message="Task Updated Successfully"
+               request.session['task_message'] = task_message
+               return HttpResponseRedirect(reverse('projectdetails', args=[project_data.name ]))
          else:
             print 'errror in herereeeee'
             print request.method
             task_message="Task Update Not Successful"
             print 'something went wrong !!!!!!!!'   
-      
+            request.session['task_message'] = task_message
+            return HttpResponseRedirect(reverse('projectdetails', args=[project_data.name ]))
       if request.method=='POST' and 'schedule_comment' in request.POST:
          schedule_comment_form = ScheduleCommentForm(request.POST or None)
          print request.POST
@@ -559,11 +598,15 @@ def projectdetails(request,name):
                 p.save()
             else:
                task_message="Comment could not be added"
+            request.session['task_message'] = task_message
+            return HttpResponseRedirect(reverse('projectdetails', args=[project_data.name ]))
          else:
             print 'errror in herereeeee'
             print request.method
             task_message="Comment could not be added"
             print schedule_comment_form.errors
+            request.session['task_message'] = task_message
+            return HttpResponseRedirect(reverse('projectdetails', args=[project_data.name ]))
 
       if request.method=='POST' and 'order_comment' in request.POST:
          material_comment_form = MaterialCommentForm(request.POST or None)
@@ -583,11 +626,13 @@ def projectdetails(request,name):
                 p.save()
             else:
                order_message="Comment could not be added"
+            return HttpResponseRedirect(reverse('projectdetails', args=[project_data.name ]))
          else:
             print 'errror in herereeeee'
             print request.method
             order_message="Comment could not be added"
             print material_comment_form.errors
+            return HttpResponseRedirect(reverse('projectdetails', args=[project_data.name ]))
 
       if request.method=='POST' and 'schedule_delete' in request.POST:
                 id_ = request.POST.get('model_instance')
@@ -595,51 +640,198 @@ def projectdetails(request,name):
                 schedule_data = Schedule.objects.get(id=id_)
                 schedule_data.delete()
                 task_message="Task Deleted Successfully"
+                return HttpResponseRedirect(reverse('projectdetails', args=[project_data.name ]))
       
+      if request.method =='POST' and 'download_excel' in request.POST:
+          file_full_path = "cpm/orders.xlsx"
+          with open(file_full_path,'rb') as f:
+              data = f.read()
+          response = HttpResponse(data, content_type=mimetypes.guess_type(file_full_path)[0])
+          response['Content-Disposition'] = "attachment; filename=orders"
+          response['Content-Length'] = os.path.getsize(file_full_path)
+          return response
       if request.method=='POST' and 'excel_data' in request.POST:
-         print 'hereeeeee'
-         excel_form = ExcelForm(request.POST, request.FILES)
+        print 'hereeeeee'
+        excel_form = ExcelForm(request.POST, request.FILES)
          
          
-         print request.POST
-         if excel_form.is_valid():
-           print 'vaaalidddd'
-           excel = request.FILES['excel_file']
-           print excel
-           name = excel.name
-           extension=[]
-           extension = name.split('.')
-           print extension
-           if extension[1] in ('xlsx','xls'):
-             print "right extension"
-             wb = openpyxl.load_workbook(excel)
-             sheet = wb.get_sheet_by_name('Sheet1')
-             for row in range(2, sheet.max_row + 1):
-               category = sheet['A'+str(row)].value
-               subcategory = sheet['B'+str(row)].value
-               item = sheet['C'+str(row)].value
-               vendor = sheet['D'+str(row)].value
-               url = sheet['E'+str(row)].value
-               quantity = sheet['F'+str(row)].value
-               price = sheet['G'+str(row)].value
-               status = OrderStatus.objects.get(status_id=50)
-               currency = sheet['H'+str(row)].value
-               print category, subcategory, item, vendor, url, quantity, price, status, currency
-               try:
-                  p = Material(project_name=project_data,order_category=category,\
-                                order_sub_category=subcategory,order_item=item,order_vendor=vendor,\
-                                order_item_url=url,order_quantity=quantity,\
-                                order_currency=currency,order_unit_price=price, order_status=status)
-                  p.save() 
-                  order_message =  "Excel sheet successfully processed."
-               except Exception as e:
-                print str(e)
-                order_message =  "Order number "+ str(row)+" could not be saved."
+        print request.POST
+        if excel_form.is_valid() and request.POST.get('excel_file')!="":
+          print 'vaaalidddd'
+          excel = request.FILES['excel_file']
+          print excel
+          name = excel.name
+          extension=[]
+          extension = name.split('.')
+          print extension
+          if extension[1] in ('xlsx','xls'):
+            print "right extension"
+            wb = openpyxl.load_workbook(excel)
+            sheet = wb.get_sheet_by_name('Sheet1')
+            if sheet['A'+str(1)].value == "Id":
+                for row in range(2, sheet.max_row + 1):
+                  id_ = sheet['A'+str(row)].value
+                  category = sheet['C'+str(row)].value
+                  subcategory = category.split('-')[1]
+                  category = category.split('-')[0]
+                  item = sheet['D'+str(row)].value
+                  vendor = sheet['E'+str(row)].value
+                  url = sheet['F'+str(row)].value
+                  quantity = sheet['G'+str(row)].value
+                  currprice = sheet['H'+str(row)].value
+                  currency = currprice[0:2]
+                  price = currprice[2:]
+                  hsn = sheet['I'+str(row)].value
+                  print category, subcategory, item, vendor, url, quantity, currprice, currency, price, hsn
+                  update_list =[]
+                  comment=""
+                  try:
+                      p = Material.objects.get(id=id_)
 
-         else:
+                      if str(category) != p.order_category:
+                        comment=comment+" Changed category from \""+p.order_category+"\" to\""+category+"\"."
+                        p.order_category = category
+                        update_list.append('order_category')
+                      if str(subcategory) != p.order_sub_category:
+                        comment=comment+" Changed subcategory from \""+p.order_sub_category+"\" to\""+subcategory+"\"."
+                        p.order_sub_category = subcategory
+                        update_list.append('order_sub_category')
+                      if str(item) != p.order_item:
+                        comment=comment+" Changed item from \""+p.order_item+"\" to\""+item+"\"."
+                        p.order_item = item
+                        update_list.append('order_item')
+                      if str(url) != p.order_item_url:
+                        comment=comment+" Changed URL from \""+str(p.order_item_url)+"\" to\""+str(url)+"\"."
+                        p.order_item_url = url
+                        update_list.append('order_item_url')
+                      if str(vendor) != p.order_vendor:
+                        comment=comment+" Changed vendor from \""+p.order_vendor+"\" to\""+vendor+"\"."
+                        p.order_vendor = vendor
+                        update_list.append('order_vendor')
+                      if int(quantity) != p.order_quantity:
+                        comment=comment+" Changed quantity from \""+str(p.order_quantity)+"\" to\""+str(quantity)+"\"."
+                        p.order_quantity = quantity
+                        update_list.append('order_quantity')
+                      # if currency !=p.order_currency:
+                      #   p.order_currency = currency
+                      if float(price) != p.order_unit_price:
+                        print type(price), type(p.order_unit_price)
+                        comment=comment+" Changed price from \""+str(p.order_unit_price)+"\" to\""+str(price)+"\"."
+                        p.order_unit_price = price
+                        if p.order_unit_price == "":
+                            p.order_unit_price =0.00
+                        update_list.append('order_unit_price')
+   
+                      
+                      if str(hsn) != p.order_hsn:
+                        comment=comment+" Changed HSN code from \""+str(p.order_hsn)+"\" to\""+str(hsn)+"\"."
+                        p.order_hsn = hsn
+                        update_list.append('order_hsn')
+
+                      p.save(update_fields=update_list)
+                      if comment !="":
+                        print 'comments are not none'
+                        author = request.user
+                        c = MaterialComment(material=p,comment=comment,author=author)
+                        c.save()
+                        all_users = User.objects.all()
+                        for i in all_users:
+                          print i.username
+                          t = ReadCommentTrack(order_id=p.id,project_id = project_data.id,user_name=i.username,read_flag="N")
+                          t.save()
+                      try:
+                        check_vendor = VendorList.objects.get(vendor_name=vendor)
+                        print 'vendor',check_vendor
+                        if check_vendor=="":
+                            v = VendorList(vendor_name=vendor,address="",GSTIN="",contact_person="",contact_num=9999999999,website="")
+                            v.save()
+                      except VendorList.DoesNotExist:
+                          v = VendorList(vendor_name=vendor,address="",GSTIN="",contact_person="",contact_num=9999999999,website="")
+                          v.save()
+                      try:
+                          check_sub_category = CategoryList.objects.get(sub_category=subcategory)
+                          print 'category',check_sub_category
+                          if check_sub_category=="":
+                              c = CategoryList(category=category,sub_category=subcategory)
+                              c.save()
+                      except CategoryList.DoesNotExist:
+                              c = CategoryList(category=category,sub_category=subcategory)
+                              c.save()
+                      order_message="Excel Order Updated Successfully"
+                      
+                  except Material.DoesNotExist:
+                      print 'in exception blck'
+                      status = OrderStatus.objects.get(status_id = 100)
+                      priority = OrderPriority.objects.get(priority_id=200)
+                      elt = "1d"
+                      p = Material(project_name=project_data,order_category=category,\
+                                order_sub_category=subcategory,order_item=item,\
+                                order_item_url=url,order_vendor = vendor,order_quantity=int(quantity),\
+                                order_currency = currency,order_unit_price=float(price), order_status=status, \
+                                est_lead_time=elt,order_priority=priority, order_hsn=hsn,author=request.user)
+                      p.save()
+                      order_message="Excel Order Updated Successfully"
+                  print order_message
+                  
+                request.session['order_message'] = order_message
+                return HttpResponseRedirect(reverse('projectdetails', args=[project_data.name ]))
+
+            else:
+                for row in range(2, sheet.max_row + 1):
+                  category = sheet['A'+str(row)].value
+                  subcategory = sheet['B'+str(row)].value
+                  item = sheet['C'+str(row)].value
+                  vendor = sheet['D'+str(row)].value
+                  url = sheet['E'+str(row)].value
+                  quantity = sheet['F'+str(row)].value
+                  price = sheet['G'+str(row)].value
+                  status = OrderStatus.objects.get(status_id=100)
+                  priority = OrderPriority.objects.get(priority_id=200)
+                  currency = "" #empty
+                  author = request.user
+                  elt = "1d"
+                  hsn = sheet['H'+str(row)].value
+                  if price =="":
+                      price =0.00
+                  if currency =="":
+                      currency="Rs"
+                  print category, subcategory, item, vendor, url, quantity, price, status, currency, hsn
+                  try:
+                      check_vendor = VendorList.objects.get(vendor_name=vendor)
+                      print 'vendor',check_vendor
+                      if check_vendor=="":
+                          v = VendorList(vendor_name=vendor,address="",GSTIN="",contact_person="",contact_num=9999999999,website="")
+                          v.save()
+                  except VendorList.DoesNotExist:
+                      v = VendorList(vendor_name=vendor,address="",GSTIN="",contact_person="",contact_num=9999999999,website="")
+                      v.save()
+                  try:
+                      check_sub_category = CategoryList.objects.get(sub_category=subcategory)
+                      print 'category',check_sub_category
+                      if check_sub_category=="":
+                          c = CategoryList(category=category,sub_category=subcategory)
+                          c.save()
+                  except CategoryList.DoesNotExist:
+                          c = CategoryList(category=category,sub_category=subcategory)
+                          c.save()
+                  try:
+                      p = Material(project_name=project_data,order_category=category,\
+                                    order_sub_category=subcategory,order_item=item,order_vendor=vendor,\
+                                    order_item_url=url,order_quantity=quantity,est_lead_time=elt,\
+                                    order_currency=currency,order_unit_price=price, order_status=status, order_hsn=hsn,order_priority=priority,author=author)
+                      p.save() 
+                      order_message =  "Excel sheet successfully processed."
+                      request.session['order_message'] = order_message
+                      return HttpResponseRedirect(reverse('projectdetails', args=[project_data.name]))
+                  except Exception as e:
+                    print str(e)
+                    order_message =  "Order number "+ str(row)+" could not be saved."
+        else:
            print 'form INVALID'
            order_message = "Please upload .xls or .xlsx file only"
+           request.session['order_message'] = order_message
            print excel_form.errors
+           return HttpResponseRedirect(reverse('projectdetails', args=[project_data.name]))
 
 
       if request.method=='POST' and 'process_url' in request.POST:
@@ -649,6 +841,7 @@ def projectdetails(request,name):
          if process_url_form.is_valid():
             url = process_url_form.cleaned_data.get('process_link')
             extracted_data = ReadAsin(url)
+            print extracted_data
             if len(extracted_data)==0:
               order_message ="Oops there has been an error. Please add order manually"
               print 'Please add order manually'
@@ -656,34 +849,71 @@ def projectdetails(request,name):
               print 'Found dataaaaaaaaaaaaa'
               try:
                   order_category = extracted_data[0]['CATEGORY']
+                  if order_category == "":
+                    order_category = "Unknown"
                   order_sub_category = extracted_data[0]['SUBCATEGORY']
+                  if order_sub_category == "":
+                    order_sub_category = "Unknown"
                   order_item = extracted_data[0]['ITEM']
+                  if order_item == "":
+                    order_item = "Nil"
                   order_vendor = extracted_data[0]['VENDOR']
                   order_item_url = extracted_data[0]['URL']
                   order_quantity = 1
                   order_unit_price = extracted_data[0]['ORIGINAL_PRICE']
+                  if order_unit_price =="":
+                    order_unit_price=0.00
+                  author = request.user
+                  est_lead_days = "1d"
+
                   # print 'string is',price_string
                   # match = re.search(r'([\D]+)([\d,.]+)', price_string)
                   # output = (match.group(1), match.group(2).replace(',',''))
                   # print 'output is',output[1]
                   # order_unit_price = output[1]
                   order_currency = extracted_data[0]['CURRENCY']
-                  order_status = OrderStatus.objects.get(status_id=50)
-                  p = Material(project_name=project_data,order_category=order_category,\
+                  if order_currency=="":
+                    order_currency='Rs'
+                 
+                  order_priority = OrderPriority.objects.get(priority_id=300)
+                  order_status = OrderStatus.objects.get(status_id=100)
+                  try:
+                     check_vendor = VendorList.objects.get(vendor_name=order_vendor)
+                     print 'vendor',check_vendor
+                     if check_vendor=="":
+                        v = VendorList(vendor_name=order_vendor,address="",GSTIN="",contact_person="",contact_num=9999999999,website="")
+                        v.save()
+                  except VendorList.DoesNotExist:
+                     v = VendorList(vendor_name=order_vendor,address="",GSTIN="",contact_person="",contact_num=9999999999,website="")
+                     v.save()
+                  try:
+                     check_sub_category = CategoryList.objects.get(sub_category=order_sub_category)
+                     print 'category',check_sub_category
+                     if check_sub_category=="":
+                        c = CategoryList(category=order_category,sub_category=order_sub_category)
+                        c.save()
+                  except CategoryList.DoesNotExist:
+                        c = CategoryList(category=order_category,sub_category=order_sub_category)
+                        c.save()
+                  p = Material(project_name=project_data,order_category=order_category,author = author,est_lead_time=est_lead_days,\
                                 order_sub_category=order_sub_category,order_item=order_item,order_vendor=order_vendor,\
                                 order_item_url=order_item_url,order_quantity=order_quantity,\
-                                order_currency=order_currency,order_unit_price=order_unit_price, order_status=order_status)
+                                order_currency=order_currency,order_unit_price=order_unit_price, order_status=order_status,order_priority=order_priority,order_hsn="")
                   p.save(),
                   order_message="Order Placed Successfully"
-              except:
+                  request.session['order_message'] = order_message
+                  return HttpResponseRedirect(reverse('projectdetails', args=[project_data.name ]))
+              except Exception as e:
+                print str(e)
                 order_message="Oops there has been an error. Please add order manually"
-
+                request.session['order_message'] = order_message
+                return HttpResponseRedirect(reverse('projectdetails', args=[project_data.name ]))
                
       if request.method=='POST' and 'material_save' in request.POST:
-             material_form = MaterialForm(request.POST or None)
-             print request.POST
-             print 'hererere in order 11111'
-             if material_form.is_valid():   
+            material_form = MaterialForm(request.POST or None)
+            print request.POST
+            print 'hererere in order 11111'
+            if material_form.is_valid():   
                 print 'hererere in order 2222'
                 order_category = material_form.cleaned_data.get('order_category')
                 order_sub_category = material_form.cleaned_data.get('order_sub_category')
@@ -692,25 +922,33 @@ def projectdetails(request,name):
                 order_item_url = material_form.cleaned_data.get('order_item_url')
                 order_quantity = material_form.cleaned_data.get('order_quantity')
                 order_currency = material_form.cleaned_data.get('order_currency')
+                order_hsn = material_form.cleaned_data.get('order_hsn')
+                if order_currency=="":
+                  order_currency='Rs'
                 order_unit_price = material_form.cleaned_data.get('order_unit_price')
-                order_status = OrderStatus.objects.get(status_id=50)
+                if order_unit_price =="":
+                  order_unit_price=0.00
+                order_status = OrderStatus.objects.get(status_id=100)
+                priority_id = material_form.cleaned_data.get('order_priority')
+                order_priority = OrderPriority.objects.get(priority_id=priority_id)
                 author = request.user
                 est_lead_time = str(material_form.cleaned_data.get('est_lead_num'))+material_form.cleaned_data.get('est_lead_days')
                 p = Material(project_name=project_data,order_category=order_category,\
                               order_sub_category=order_sub_category,order_item=order_item,order_vendor=order_vendor,\
                               order_item_url=order_item_url,order_quantity=order_quantity,\
                               order_currency=order_currency,order_unit_price=order_unit_price,\
-                              order_status=order_status,author=author,est_lead_time=est_lead_time)
+                              order_status=order_status,author=author,est_lead_time=est_lead_time,order_priority=order_priority,order_hsn=order_hsn)
                 p.save()
                 if order_message=="":
                     order_message="Order Placed Successfully"
-             else:
+            else:
                 print 'errror in herereeeee'
                 print request.method
                 if order_message=="":
                   order_message="Order could not be placed"
                 print material_form.errors
-     
+            request.session['order_message'] = order_message
+            return HttpResponseRedirect(reverse('projectdetails', args=[project_data.name ]))
       if request.method=='POST' and 'order_edit' in request.POST:
          material_form = MaterialForm(request.POST or None)
          print request.POST
@@ -730,58 +968,127 @@ def projectdetails(request,name):
             status_id = request.POST.get('order_status')
             est_lead_num = request.POST.get('est_lead_num')
             est_lead_days = request.POST.get('est_lead_days')
-
+            priority = material_form.cleaned_data.get('order_priority')
+            hsn = material_form.cleaned_data.get('order_hsn')
+            update_list =[]
+            comment=""
             print 'status_id is ',status_id
             print 'model  is ',id_
             print 'before try !!!!!!!'
             print 'currency is', currency
             try:
                 p = Material.objects.get(id=id_)
-                if item:
+                
+                if item != p.order_item:
+                  comment=comment+" Changed item from \""+p.order_item+"\" to\""+item+"\"."
                   p.order_item = item
-                if category:
+                  update_list.append('order_item')
+
+                if category != p.order_category:
+                  comment=comment+" Changed category from \""+p.order_category+"\" to\""+category+"\"."
                   p.order_category = category
-                if sub_category:
+                  update_list.append('order_category')
+                if sub_category != p.order_sub_category:
+                  comment=comment+" Changed subcategory from \""+p.order_sub_category+"\" to\""+sub_category+"\"."
                   p.order_sub_category = sub_category
-                if quantity:
+                  update_list.append('order_sub_category')
+                if quantity != p.order_quantity:
+                  comment=comment+" Changed quantity from \""+str(p.order_quantity)+"\" to\""+str(quantity)+"\"."
                   p.order_quantity = quantity
-                if currency:
-                  p.order_currency = currency
-                if price:
+                  update_list.append('order_quantity')
+                # if currency !=p.order_currency:
+                #   p.order_currency = currency
+                if price != p.order_unit_price:
+                  comment=comment+" Changed price from \""+str(p.order_unit_price)+"\" to\""+str(price)+"\"."
                   p.order_unit_price = price
-                if url:
+                  if p.order_unit_price == "":
+                      p.order_unit_price =0.00
+                  update_list.append('order_unit_price')
+                if url != p.order_item_url:
+                  comment=comment+" Changed URL from \""+str(p.order_item_url)+"\" to\""+str(url)+"\"."
                   p.order_item_url = url
-                if vendor:
+                  update_list.append('order_item_url')
+                if vendor != p.order_vendor:
+                  comment=comment+" Changed vendor from \""+p.order_vendor+"\" to\""+vendor+"\"."
                   p.order_vendor = vendor
+                  update_list.append('order_vendor')
                 if est_lead_num and est_lead_days:
-                  p.est_lead_time = str(est_lead_num)+str(est_lead_days)
+                  print "in here"
+                  match = re.match(r"([0-9]+)([a-z]+)", p.est_lead_time , re.I)
+                  print 'match is', match
+                  if match:
+                    items=match.groups()
+                    print 'items is ',items
+                    if est_lead_num!=items[0] or est_lead_days !=items[1]:
+                      comment=comment+" Changed ELT from \""+p.est_lead_time+"\" to\""+str(est_lead_num)+str(est_lead_days)+"\"."
+                      p.est_lead_time = str(est_lead_num)+str(est_lead_days)
+                      update_list.append('est_lead_time')
+                
+                if int(priority) != p.order_priority.priority_id:
+                  print type(priority), type(p.order_priority.priority_id)
+                  o = OrderPriority.objects.get(priority_id=p.order_priority.priority_id)
+                  n = OrderPriority.objects.get(priority_id=priority)
+                  comment=comment+" Changed priority from \""+o.name+"\" to\""+n.name+"\"."
+                  p.order_priority = n
+                  update_list.append('order_priority')
 
+                if int(status_id) != p.order_status.status_id:
+                  print type(status_id), type(p.order_status.status_id)
+                  o = OrderStatus.objects.get(status_id=p.order_status.status_id)
+                  n = OrderStatus.objects.get(status_id=status_id)
+                  comment=comment+" Changed priority from \""+o.name+"\" to\""+n.name+"\"."
+                  p.order_status = n
+                  update_list.append('order_status')
+                # if p.order_currency == "":
+                #   p.order_currency="Rs"
+                
+                if hsn != p.order_hsn:
+                  comment=comment+" Changed HSN code from \""+p.order_hsn+"\" to\""+hsn+"\"."
+                  p.order_hsn = hsn
+                  update_list.append('order_hsn')
 
-                p.save(update_fields=['order_item','order_category','order_sub_category','order_quantity','order_currency','order_unit_price','order_item_url','order_vendor','est_lead_time'])
+                p.save(update_fields=update_list)
+                if comment !="":
+                  print 'comments are not none'
+                  author = request.user
+                  c = MaterialComment(material=p,comment=comment,author=author)
+                  c.save()
+                  all_users = User.objects.all()
+                  for i in all_users:
+                    print i.username
+                    t = ReadCommentTrack(order_id=p.id,project_id = project_data.id,user_name=i.username,read_flag="N")
+                    t.save()
                 order_message="Order Updated Successfully"
+                
             except Material.DoesNotExist:
                 print 'in exception blck'
                 status = OrderStatus.objects.filter(status_id = int(status_id))
                 p = Material(project_name=project_data,order_category=category,\
                           order_sub_category=sub_category,order_item=item,\
                           order_item_url=url,order_vendor = vendor,order_quantity=int(quantity),\
-                          order_currency = currency,order_unit_price=float(price), order_status=status, est_lead_time=est_lead_time)
+                          order_currency = currency,order_unit_price=float(price), order_status=status, \
+                          est_lead_time=est_lead_time,order_priority=priority, order_hsn=hsn)
                 p.save()
                 order_message="Order Updated Successfully"
+            print order_message
+            request.session['order_message'] = order_message
+            return HttpResponseRedirect(reverse('projectdetails', args=[project_data.name ]))
          else:
             print 'errror in herereeeee'
             print request.method
             order_message="Order Update Not Successful"
             print material_form.errors
-            print 'something went wrong !!!!!!!!'   
-
+            print 'something went wrong !!!!!!!!' 
+            request.session['order_message'] = order_message  
+            return HttpResponseRedirect(reverse('projectdetails', args=[project_data.name ]))
       if request.method=='POST' and 'order_delete' in request.POST:
           id_ = request.POST.get('model_instance')
           print'Name issss',id_
           material_data = Material.objects.get(id=id_)
           material_data.delete()
           order_message="Order Deleted Successfully"
-
+          request.session['order_message'] = order_message
+          return HttpResponseRedirect(reverse('projectdetails', args=[project_data.name ]))
 
       if request.method=='POST' and 'tracking_save' in request.POST:
           tracking_form = TrackingForm(request.POST)
@@ -817,11 +1124,15 @@ def projectdetails(request,name):
                  p = TrackingInfo(tracking_no = tracking_num, courier_id = courier, material = material_data)
                  p.save()
                  order_message="Tracking Recorded Successfully"
+             request.session['order_message'] = order_message
+             return HttpResponseRedirect(reverse('projectdetails', args=[project_data.name ]))
           except Exception as e:
              print 'tracking for material doesnt exist'
              print tracking_form.errors
              print str(e) 
              order_message = "Tracking Not Found"
+             request.session['order_message'] = order_message
+             return HttpResponseRedirect(reverse('projectdetails', args=[project_data.name ]))
           #material_data = Material.objects.get(id=id_)
           #material_data.delete()
           
@@ -845,11 +1156,16 @@ def projectdetails(request,name):
             print request.method
             prototype_message="Photo could not be uploaded"
             print prototype_form.errors
+          request.session['prototype_message'] = prototype_message
+          return HttpResponseRedirect(reverse('projectdetails', args=[project_data.name ]))
       if request.method=='POST' and 'delete_photo' in request.POST:
           id_ = request.POST.get('model_instance')
           print'photo issss',id_
           prototype_data = Prototype.objects.get(id=id_)
           prototype_data.delete()
+          prototype_message="Order Deleted Successfully"
+          request.session['prototype_message'] = prototype_message
+          return HttpResponseRedirect(reverse('projectdetails', args=[project_data.name ]))
           #message="Order Deleted Successfully"
       try:
          project_plan_data = None
@@ -858,11 +1174,13 @@ def projectdetails(request,name):
          project_plan_data = None   
       try:
          order_data = None
+         print 'ffetching from hereeeeeee'
          order_data = Material.objects.filter(project_name=project_data.id)
       except Material.DoesNotExist:
          order_data = None
       try:
          schedule_data = None
+         request.session['task_message'] = task_message
          schedule_data = Schedule.objects.filter(project_name=project_data.id)
       except Schedule.DoesNotExist:
          schedule_data = None
@@ -871,6 +1189,13 @@ def projectdetails(request,name):
          prototype_data = Prototype.objects.filter(project_name=project_data.id)
       except Prototype.DoesNotExist:
          prototype_data = None
+
+      try:   
+         comment_data = None
+         comment_data = ReadCommentTrack.objects.filter(project_id=project_data.id,user_name=request.user)
+         print (comment_data)
+      except ReadCommentTrack.DoesNotExist:
+         comment_data = None
       
       plan_form = ProjectPlanForm(request.POST or None)
       schedule_form = ScheduleForm(request.POST or None)
@@ -903,6 +1228,8 @@ def projectdetails(request,name):
          "process_url_form": process_url_form,
          "excel_form":excel_form,
          "tracking_form":tracking_form,
+         "status_message":status_message,
+         "comment_data":comment_data,
       }
       return render(request,"project/details/base.html",context)
       

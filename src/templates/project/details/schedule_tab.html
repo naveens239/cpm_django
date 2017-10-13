@@ -4,7 +4,7 @@
 		<button class="btn btn-default pull-right" data-title="Add" data-toggle="modal" data-target="#add">Add Task</button>
 		<div style="clear:both"></div>
 		<h4 class="text-align-center">View Tasks</h4>
-   		<h5 class="text-align-center"> {{task_message}}</h5>
+   		<h5 class="text-align-center"> {{request.session.task_message}}</h5>
    		{% if schedule_data %}
 	    <div class="table-responsive">
 			<table id="taskTable" class="table table-condensed table-striped table-bordered table-hover no-margin">

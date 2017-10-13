@@ -73,6 +73,12 @@ class OrderStatus(models.Model):
 	def __unicode__(self):
 		return str(self.name)
 
+class OrderPriority(models.Model):	
+	name = models.CharField(max_length=50, blank=False, null=False)
+	priority_id = models.IntegerField(blank=False, null=False)
+	def __unicode__(self):
+		return str(self.name)
+
 class Material(models.Model):
 	project_name = models.ForeignKey('Project',unique=False)
 	order_category = models.CharField(max_length=500, blank=False, null=False)
@@ -87,6 +93,8 @@ class Material(models.Model):
 	author = models.CharField(max_length=200,blank=False)
 	added_on = models.DateTimeField(auto_now_add = False, auto_now = True)
 	est_lead_time = models.CharField(max_length=10,blank=False)
+	order_priority = models.ForeignKey('OrderPriority',null=False,blank=False)
+	order_hsn = models.CharField(max_length=15, blank=True)
 
 class Prototype(models.Model):
 	project_name = models.ForeignKey('Project',unique=False)
@@ -121,6 +129,11 @@ class VendorList(models.Model):
     contact_num = models.IntegerField(blank=True,null=True)
     website = models.URLField(blank=True,null=True)
 
+class ReadCommentTrack(models.Model):
+	user_name = models.CharField(max_length=200,blank=False)
+	order_id = models.IntegerField(blank=False,null=False)
+	project_id = models.IntegerField(blank=False,null=False)
+	read_flag = models.CharField(max_length=1,blank=False,default="N")
 
 class Courier(models.Model):
 	name = models.CharField(max_length=200,blank=True)

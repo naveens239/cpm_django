@@ -3,7 +3,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Div, Fieldset
 from crispy_forms.bootstrap import Field, InlineRadios, TabHolder, Tab
 from django.db import models
-from .models import SignUp,Project,Stage,StageSetting,Team,Role,Plan, Schedule, Material
+from .models import SignUp,Project,Stage,StageSetting,Team,Role,Plan, Schedule, Material,OrderPriority
 from .models import Prototype, ScheduleComment, MaterialComment, CategoryList, VendorList,Courier, TrackingInfo
 from django.utils import timezone
 
@@ -53,6 +53,12 @@ class AddNewProjectForm(forms.ModelForm):
     name = forms.CharField(required = True)
     start_date = forms.DateField(widget=forms.DateInput(attrs={'class': 'datepicker'}))
     end_date =forms.DateField(widget=forms.DateInput(attrs={'class': 'datepicker'}))
+    def clean_name(self):
+      project_name = self.cleaned_data.get('name')
+      characters = ["?","/","$","\\"]
+      if any(char in characters for char in project_name):
+        raise forms.ValidationError("Project name cannot have special characters")
+      return project_name
     # def clean_date(self):
     #     start_date = cleaned_data.get("start_date")
     #     end_date = cleaned_data.get("end_date")
@@ -143,14 +149,16 @@ class MaterialForm(forms.ModelForm):
   #order_sub_category = forms.CharField(required=True,max_length=500)
   order_item = forms.CharField(required=True,max_length=500)
   order_vendor = forms.ChoiceField(required = True, choices = VendorList.objects.all().values_list("vendor_name","vendor_name").distinct())
-  order_item_url = forms.URLField(required=False,max_length=1000)
-  order_quantity =  forms.IntegerField(required=True,  min_value=0)
+  order_item_url = forms.URLField(required=False,max_length=1000,help_text="Please enter the URL of the page.",initial="http://")
+  order_quantity =  forms.IntegerField(required=True,  min_value=1, initial=1)
   RELEVANCE_CHOICES = (("Rs", ("Rs")),("$", ("$")))
   order_currency =  forms.ChoiceField(required=False,choices=RELEVANCE_CHOICES)
-  order_unit_price = forms.DecimalField(required=False,max_digits=6, decimal_places=2, min_value=0)
-  est_lead_num = forms.IntegerField(required=True,  min_value=1)
+  order_unit_price = forms.DecimalField(required=False,max_digits=6, decimal_places=2, min_value=0, initial=0.00)
+  est_lead_num = forms.IntegerField(required=True,  min_value=0, initial=1)
   DAY_CHOICES = (("d","day(s)"),("w", "week(s)"),("m","month(s)"))
   est_lead_days =forms.ChoiceField(required=False,choices=DAY_CHOICES)
+  order_priority = forms.ChoiceField(required = True,choices = ((op.priority_id, op.name) for op in OrderPriority.objects.all()))
+  order_hsn = forms.CharField(required=False,max_length=16)
   #order_status = forms.ChoiceField(required = True,choices= )
   def __init__(self, *args, **kwargs):
     super(MaterialForm, self).__init__(*args, **kwargs)
@@ -167,6 +175,8 @@ class MaterialForm(forms.ModelForm):
     self.fields['order_item_url'].label = "URL to Item" 
     self.fields['est_lead_num'].label = "Est Lead Time"
     self.fields['est_lead_days'].label = " "
+    self.fields['order_priority'].label = "Order Priority"
+    self.fields['order_hsn'].label = "HSN Code"
     
 class MaterialCommentForm(forms.ModelForm):
   class Meta:
@@ -183,7 +193,7 @@ class PrototypeForm(forms.ModelForm):
   photo = forms.ImageField()
 
 class ProcessURLForm(forms.Form):
-  process_link = forms.URLField(required=False,max_length=1000)
+  process_link = forms.URLField(required=False,max_length=1000,help_text="Please prefix http://",initial="http://")
 
 class OrderListingForm(forms.ModelForm):
   class Meta:
@@ -207,6 +217,7 @@ class OrderListingForm(forms.ModelForm):
     if data and data.get('sub_category_choice', None) == "Others":
       self.fields['sub_category'].required = True
   #vendor = forms.CharField(required=False,max_length=200,label=("Vendor"))
+ 
 class VendorListingForm(forms.ModelForm):
   class Meta:
      model = VendorList
@@ -216,7 +227,7 @@ class VendorListingForm(forms.ModelForm):
   address = forms.CharField(widget=forms.Textarea,required=False,label="Address")
   contact_person = forms.CharField(required=False,max_length=200,label="Contact Person")
   contact_num = forms.IntegerField(error_messages={'required':'Please enter a valid phone number'},required=False,min_value=0000000000,max_value=9999999999,label="Phone")
-  website = forms.URLField(error_messages={'required':'Please enter a website address'},label="Website Link",required=False)
+  website = forms.URLField(error_messages={'required':'Please enter a website address'},label="Website Link",required=False,help_text="Please prefix http://",initial="http://")
 
 class ExcelForm(forms.Form):
   excel_file = forms.FileField(required=False,label="Excel File")

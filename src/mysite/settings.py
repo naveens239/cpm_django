@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'api',
     'floppyforms',
+    'dbbackup',
 ]
 
 MIDDLEWARE_CLASSES = [
